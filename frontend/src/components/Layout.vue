@@ -1,5 +1,5 @@
 <template>
-  <div class="min-vh-100">
+  <div class="d-flex flex-column min-vh-100">
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
       <div class="container-fluid">
@@ -118,8 +118,8 @@
       </div>
     </nav>
 
-    <!-- Main content -->
-    <main class="container-fluid" style="padding-top: 100px; padding-bottom: 20px;">
+    <!-- Main content - flex-grow-1 hace que ocupe todo el espacio disponible -->
+    <main class="flex-grow-1 container-fluid" style="padding-top: 80px; padding-bottom: 20px;">
       <div class="animate-fade-in">
         <slot />
       </div>
@@ -141,7 +141,7 @@
         <h5 class="offcanvas-title text-gradient">Menú</h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
       </div>
-        <div class="offcanvas-body">
+      <div class="offcanvas-body">
         <div class="d-flex flex-column gap-3">
           <router-link v-if="!authStore.isAdmin && !authStore.isDocente" to="/dashboard" class="btn btn-outline-primary text-start" data-bs-dismiss="offcanvas">
             <i class="bi bi-house-fill me-2"></i> Dashboard
@@ -187,113 +187,91 @@
       </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="mt-3 glass-effect">
-  <div class="container-fluid py-4">
-    <div class="row g-4 align-items-start">
-      <!-- Logo y Descripción -->
-      <div class="col-lg-3 col-md-6">
-        <div class="animate-fade-in">
-          <h4 class="text-gradient fw-bold mb-3">
-            <i class="bi bi-mortarboard-fill me-2"></i>LMS Educativo
-          </h4>
-          <p class="text-muted mb-3 small">
-            Plataforma de gestión de aprendizaje diseñada para potenciar tu educación y alcanzar tus metas académicas.
-          </p>
-          <div class="d-flex gap-2">
-            <a href="#" class="btn btn-sm btn-outline-primary rounded-circle hover-lift" style="width: 40px; height: 40px;">
-              <i class="bi bi-facebook"></i>
-            </a>
-            <a href="#" class="btn btn-sm btn-outline-primary rounded-circle hover-lift" style="width: 40px; height: 40px;">
-              <i class="bi bi-twitter"></i>
-            </a>
-            <a href="#" class="btn btn-sm btn-outline-primary rounded-circle hover-lift" style="width: 40px; height: 40px;">
-              <i class="bi bi-instagram"></i>
-            </a>
-            <a href="#" class="btn btn-sm btn-outline-primary rounded-circle hover-lift" style="width: 40px; height: 40px;">
-              <i class="bi bi-linkedin"></i>
-            </a>
-            <a href="#" class="btn btn-sm btn-outline-primary rounded-circle hover-lift" style="width: 40px; height: 40px;">
-              <i class="bi bi-youtube"></i>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <!-- Contacto -->
-      <div class="col-lg-3 col-md-6">
-        <div class="animate-fade-in" style="animation-delay: 0.2s;">
-          <h6 class="text-gradient fw-bold mb-3">Contacto</h6>
-          <ul class="list-unstyled">
-            <li class="mb-2">
-              <div class="d-flex align-items-start">
-                <i class="bi bi-geo-alt-fill text-primary me-2 mt-1"></i>
-                <small class="text-muted">Medellín, Colombia</small>
-              </div>
-            </li>
-            <li class="mb-2">
-              <div class="d-flex align-items-start">
-                <i class="bi bi-envelope-fill text-primary me-2 mt-1"></i>
-                <small class="text-muted">info@lmseducativo.com</small>
-              </div>
-            </li>
-            <li class="mb-2">
-              <div class="d-flex align-items-start">
-                <i class="bi bi-phone-fill text-primary me-2 mt-1"></i>
-                <small class="text-muted">+57 300 123 4567</small>
-              </div>
-            </li>
-            <li>
-              <div class="d-flex align-items-start">
-                <i class="bi bi-clock-fill text-primary me-2 mt-1"></i>
-                <small class="text-muted">Lun - Vie: 8AM - 6PM</small>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- Newsletter -->
-      <div class="col-lg-6 col-md-12">
-        <div class="animate-fade-in" style="animation-delay: 0.4s;">
-          <h6 class="text-gradient fw-bold mb-3">
-            <i class="bi bi-envelope-heart me-2"></i>Suscríbete a nuestro boletín
-          </h6>
-          <p class="text-muted mb-3 small">Recibe las últimas novedades, cursos y recursos educativos directamente en tu correo</p>
-          <div class="row g-2">
-            <div class="col-md-8">
-              <input type="email" class="form-control glass-effect border-0" placeholder="Tu email">
+    <!-- Footer - mt-auto hace que siempre esté al fondo -->
+    <footer class="mt-auto glass-effect footer-compact">
+      <div class="container-fluid py-3">
+        <div class="row g-3 align-items-center">
+          <!-- Logo y Descripción -->
+          <div class="col-lg-3 col-md-6">
+            <h5 class="text-gradient fw-bold mb-2">
+              <i class="bi bi-mortarboard-fill me-2"></i>LMS Educativo
+            </h5>
+            <p class="text-muted mb-2 small">
+              Plataforma de gestión de aprendizaje para tu educación.
+            </p>
+            <div class="d-flex gap-2">
+              <a href="#" class="btn btn-sm btn-outline-primary rounded-circle" style="width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                <i class="bi bi-facebook"></i>
+              </a>
+              <a href="#" class="btn btn-sm btn-outline-primary rounded-circle" style="width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                <i class="bi bi-twitter"></i>
+              </a>
+              <a href="#" class="btn btn-sm btn-outline-primary rounded-circle" style="width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                <i class="bi bi-instagram"></i>
+              </a>
+              <a href="#" class="btn btn-sm btn-outline-primary rounded-circle" style="width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                <i class="bi bi-linkedin"></i>
+              </a>
             </div>
-            <div class="col-md-4">
-              <button class="btn btn-gradient w-100" type="button">
-                <i class="bi bi-send-fill me-2"></i>Suscribirse
-              </button>
+          </div>
+
+          <!-- Contacto -->
+          <div class="col-lg-3 col-md-6">
+            <h6 class="text-gradient fw-bold mb-2">Contacto</h6>
+            <ul class="list-unstyled mb-0">
+              <li class="mb-1">
+                <small class="text-muted">
+                  <i class="bi bi-geo-alt-fill me-1"></i>Medellín, Colombia
+                </small>
+              </li>
+              <li class="mb-1">
+                <small class="text-muted">
+                  <i class="bi bi-envelope-fill me-1"></i>info@lmseducativo.com
+                </small>
+              </li>
+              <li>
+                <small class="text-muted">
+                  <i class="bi bi-phone-fill me-1"></i>+57 300 123 4567
+                </small>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Newsletter -->
+          <div class="col-lg-6 col-md-12">
+            <h6 class="text-gradient fw-bold mb-2">
+              <i class="bi bi-envelope-heart me-2"></i>Boletín
+            </h6>
+            <p class="text-muted mb-2 small">Recibe novedades y recursos educativos</p>
+            <div class="row g-2">
+              <div class="col-8">
+                <input type="email" class="form-control form-control-sm glass-effect border-0" placeholder="Tu email">
+              </div>
+              <div class="col-4">
+                <button class="btn btn-gradient btn-sm w-100" type="button">
+                  <i class="bi bi-send-fill"></i> Enviar
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- Copyright -->
-    <div class="row mt-4 pt-3 border-top">
-      <div class="col-md-6 text-center text-md-start mb-2 mb-md-0">
-        <p class="text-muted mb-0 small animate-fade-in" style="animation-delay: 0.6s;">
-          <i class="bi bi-mortarboard-fill me-1"></i>
-          © 2024 LMS Educativo. Todos los derechos reservados.
-        </p>
+        <!-- Copyright -->
+        <div class="row mt-3 pt-2 border-top">
+          <div class="col-md-6 text-center text-md-start">
+            <p class="text-muted mb-0 small">
+              <i class="bi bi-mortarboard-fill me-1"></i>
+              © 2024 LMS Educativo. Todos los derechos reservados.
+            </p>
+          </div>
+          <div class="col-md-6 text-center text-md-end">
+            <p class="text-muted mb-0 small">
+              Hecho con <i class="bi bi-heart-fill text-danger"></i> en Colombia
+            </p>
+          </div>
+        </div>
       </div>
-      <div class="col-md-6 text-center text-md-end">
-        <p class="text-muted mb-0 small animate-fade-in" style="animation-delay: 0.7s;">
-          Hecho con <i class="bi bi-heart-fill text-danger"></i> en Colombia
-          <span class="mx-2">|</span>
-          <a href="#" class="text-muted text-decoration-none hover-lift">
-            <i class="bi bi-arrow-up-circle me-1"></i>Volver arriba
-          </a>
-        </p>
-      </div>
-    </div>
-  </div>
-</footer>
+    </footer>
   </div>
 </template>
 
@@ -334,5 +312,15 @@ const logout = async () => {
   backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+}
+
+.footer-compact {
+  flex-shrink: 0;
+}
+
+/* Asegurar que el footer siempre esté abajo */
+.min-vh-100 {
+  display: flex;
+  flex-direction: column;
 }
 </style>

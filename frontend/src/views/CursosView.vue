@@ -308,14 +308,14 @@ const cargarCursos = async () => {
     await new Promise(resolve => setTimeout(resolve, 600))
     
     // Datos de ejemplo para demo con más variedad
-    const cursosDemo = [
+    let cursosDemo = [
       {
         id: 1,
         titulo: 'Introducción a la Programación',
         codigo: 'PROG-101',
         descripcion: 'Aprende los fundamentos de la programación con ejemplos prácticos y ejercicios interactivos',
         activo: true,
-        creador: { nombre: 'Juan', apellido: 'Pérez' },
+        creador: { id: 2, nombre: 'Juan', apellido: 'Pérez' },
         _count: { clases: 12, matriculas: 45 },
         createdAt: '2024-01-15'
       },
@@ -325,7 +325,7 @@ const cargarCursos = async () => {
         codigo: 'BD-301',
         descripcion: 'Diseño, implementación y optimización de bases de datos relacionales y NoSQL',
         activo: true,
-        creador: { nombre: 'María', apellido: 'García' },
+        creador: { id: 2, nombre: 'Juan', apellido: 'Pérez' },
         _count: { clases: 10, matriculas: 32 },
         createdAt: '2024-01-10'
       },
@@ -334,9 +334,9 @@ const cargarCursos = async () => {
         titulo: 'Desarrollo Web Full Stack',
         codigo: 'WEB-401',
         descripcion: 'Domina el desarrollo web completo: frontend, backend, bases de datos y despliegue',
-        activo: true,
-        creador: { nombre: 'Carlos', apellido: 'López' },
-        _count: { clases: 18, matriculas: 58 },
+        activo: false,
+        creador: { id: 2, nombre: 'Juan', apellido: 'Pérez' },
+        _count: { clases: 18, matriculas: 28 },
         createdAt: '2024-01-20'
       },
       {
@@ -345,7 +345,7 @@ const cargarCursos = async () => {
         codigo: 'ALG-201',
         descripcion: 'Estudio profundo de algoritmos eficientes y estructuras de datos fundamentales',
         activo: true,
-        creador: { nombre: 'Ana', apellido: 'Martínez' },
+        creador: { id: 4, nombre: 'Ana', apellido: 'Martínez' },
         _count: { clases: 14, matriculas: 38 },
         createdAt: '2024-01-08'
       },
@@ -355,7 +355,7 @@ const cargarCursos = async () => {
         codigo: 'ML-501',
         descripcion: 'Introducción al aprendizaje automático: teoría, práctica y casos de uso reales',
         activo: true,
-        creador: { nombre: 'Pedro', apellido: 'Ramírez' },
+        creador: { id: 5, nombre: 'Pedro', apellido: 'Ramírez' },
         _count: { clases: 16, matriculas: 28 },
         createdAt: '2024-01-25'
       },
@@ -365,7 +365,7 @@ const cargarCursos = async () => {
         codigo: 'MOV-301',
         descripcion: 'Crea aplicaciones móviles nativas para iOS y Android con React Native',
         activo: true,
-        creador: { nombre: 'Laura', apellido: 'Torres' },
+        creador: { id: 6, nombre: 'Laura', apellido: 'Torres' },
         _count: { clases: 15, matriculas: 35 },
         createdAt: '2024-01-18'
       },
@@ -375,7 +375,7 @@ const cargarCursos = async () => {
         codigo: 'SEC-401',
         descripcion: 'Aprende a proteger sistemas y aplicaciones contra amenazas cibernéticas',
         activo: true,
-        creador: { nombre: 'Miguel', apellido: 'Sánchez' },
+        creador: { id: 7, nombre: 'Miguel', apellido: 'Sánchez' },
         _count: { clases: 20, matriculas: 42 },
         createdAt: '2024-01-12'
       },
@@ -385,7 +385,7 @@ const cargarCursos = async () => {
         codigo: 'CLOUD-501',
         descripcion: 'Domina los servicios en la nube de Amazon Web Services desde cero',
         activo: true,
-        creador: { nombre: 'Sofia', apellido: 'González' },
+        creador: { id: 8, nombre: 'Sofia', apellido: 'González' },
         _count: { clases: 12, matriculas: 30 },
         createdAt: '2024-01-22'
       },
@@ -395,7 +395,7 @@ const cargarCursos = async () => {
         codigo: 'DES-201',
         descripcion: 'Diseña interfaces intuitivas y experiencias de usuario memorables',
         activo: true,
-        creador: { nombre: 'Andrea', apellido: 'Ruiz' },
+        creador: { id: 9, nombre: 'Andrea', apellido: 'Ruiz' },
         _count: { clases: 14, matriculas: 40 },
         createdAt: '2024-01-16'
       },
@@ -405,7 +405,7 @@ const cargarCursos = async () => {
         codigo: 'PY-301',
         descripcion: 'Análisis de datos, visualización y machine learning con Python',
         activo: false,
-        creador: { nombre: 'Roberto', apellido: 'Díaz' },
+        creador: { id: 10, nombre: 'Roberto', apellido: 'Díaz' },
         _count: { clases: 18, matriculas: 25 },
         createdAt: '2023-12-20'
       },
@@ -415,7 +415,7 @@ const cargarCursos = async () => {
         codigo: 'OPS-401',
         descripcion: 'Automatización, integración y despliegue continuo de aplicaciones',
         activo: true,
-        creador: { nombre: 'Elena', apellido: 'Vargas' },
+        creador: { id: 11, nombre: 'Elena', apellido: 'Vargas' },
         _count: { clases: 16, matriculas: 33 },
         createdAt: '2024-01-14'
       },
@@ -425,11 +425,16 @@ const cargarCursos = async () => {
         codigo: 'BC-501',
         descripcion: 'Fundamentos de blockchain, smart contracts y desarrollo de DApps',
         activo: true,
-        creador: { nombre: 'Diego', apellido: 'Morales' },
+        creador: { id: 12, nombre: 'Diego', apellido: 'Morales' },
         _count: { clases: 12, matriculas: 22 },
         createdAt: '2024-01-19'
       }
     ]
+    
+    // ✅ Filtrar cursos si es docente
+    if (authStore.isDocente) {
+      cursosDemo = cursosDemo.filter(curso => curso.creador.id === authStore.user.id)
+    }
     
     cursos.value = cursosDemo
     

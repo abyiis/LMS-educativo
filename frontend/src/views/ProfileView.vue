@@ -41,56 +41,163 @@
         </div>
       </div>
 
-      <!-- Stats Cards -->
+      <!-- Stats Cards - Específicos por rol -->
       <div class="row g-4 mb-5">
-        <div class="col-md-3">
-          <div class="card-hover h-100 animate-bounce-in" style="animation-delay: 0.1s;">
-            <div class="card-body text-center p-4">
-              <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" 
-                   style="width: 60px; height: 60px;">
-                <i class="bi bi-book-fill text-primary fs-3"></i>
+        <!-- Stats para Estudiantes -->
+        <template v-if="authStore.isEstudiante">
+          <div class="col-md-3">
+            <div class="card-hover h-100 animate-bounce-in" style="animation-delay: 0.1s;">
+              <div class="card-body text-center p-4">
+                <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" 
+                     style="width: 60px; height: 60px;">
+                  <i class="bi bi-book-fill text-primary fs-3"></i>
+                </div>
+                <h3 class="h4 mb-1">{{ stats.cursosInscritos }}</h3>
+                <p class="text-muted mb-0">Cursos Inscritos</p>
               </div>
-              <h3 class="h4 mb-1">12</h3>
-              <p class="text-muted mb-0">Cursos Completados</p>
             </div>
           </div>
-        </div>
-        <div class="col-md-3">
-          <div class="card-hover h-100 animate-bounce-in" style="animation-delay: 0.2s;">
-            <div class="card-body text-center p-4">
-              <div class="rounded-circle bg-success bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" 
-                   style="width: 60px; height: 60px;">
-                <i class="bi bi-check-circle-fill text-success fs-3"></i>
+          <div class="col-md-3">
+            <div class="card-hover h-100 animate-bounce-in" style="animation-delay: 0.2s;">
+              <div class="card-body text-center p-4">
+                <div class="rounded-circle bg-success bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" 
+                     style="width: 60px; height: 60px;">
+                  <i class="bi bi-check-circle-fill text-success fs-3"></i>
+                </div>
+                <h3 class="h4 mb-1">{{ stats.tareasEntregadas }}</h3>
+                <p class="text-muted mb-0">Tareas Entregadas</p>
               </div>
-              <h3 class="h4 mb-1">48</h3>
-              <p class="text-muted mb-0">Tareas Entregadas</p>
             </div>
           </div>
-        </div>
-        <div class="col-md-3">
-          <div class="card-hover h-100 animate-bounce-in" style="animation-delay: 0.3s;">
-            <div class="card-body text-center p-4">
-              <div class="rounded-circle bg-warning bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" 
-                   style="width: 60px; height: 60px;">
-                <i class="bi bi-star-fill text-warning fs-3"></i>
+          <div class="col-md-3">
+            <div class="card-hover h-100 animate-bounce-in" style="animation-delay: 0.3s;">
+              <div class="card-body text-center p-4">
+                <div class="rounded-circle bg-warning bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" 
+                     style="width: 60px; height: 60px;">
+                  <i class="bi bi-star-fill text-warning fs-3"></i>
+                </div>
+                <h3 class="h4 mb-1">{{ stats.promedioGeneral }}</h3>
+                <p class="text-muted mb-0">Promedio General</p>
               </div>
-              <h3 class="h4 mb-1">4.8</h3>
-              <p class="text-muted mb-0">Promedio General</p>
             </div>
           </div>
-        </div>
-        <div class="col-md-3">
-          <div class="card-hover h-100 animate-bounce-in" style="animation-delay: 0.4s;">
-            <div class="card-body text-center p-4">
-              <div class="rounded-circle bg-info bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" 
-                   style="width: 60px; height: 60px;">
-                <i class="bi bi-trophy-fill text-info fs-3"></i>
+          <div class="col-md-3">
+            <div class="card-hover h-100 animate-bounce-in" style="animation-delay: 0.4s;">
+              <div class="card-body text-center p-4">
+                <div class="rounded-circle bg-info bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" 
+                     style="width: 60px; height: 60px;">
+                  <i class="bi bi-trophy-fill text-info fs-3"></i>
+                </div>
+                <h3 class="h4 mb-1">{{ stats.certificados }}</h3>
+                <p class="text-muted mb-0">Certificados</p>
               </div>
-              <h3 class="h4 mb-1">5</h3>
-              <p class="text-muted mb-0">Certificados</p>
             </div>
           </div>
-        </div>
+        </template>
+
+        <!-- Stats para Docentes -->
+        <template v-else-if="authStore.isDocente">
+          <div class="col-md-3">
+            <div class="card-hover h-100 animate-bounce-in" style="animation-delay: 0.1s;">
+              <div class="card-body text-center p-4">
+                <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" 
+                     style="width: 60px; height: 60px;">
+                  <i class="bi bi-book-fill text-primary fs-3"></i>
+                </div>
+                <h3 class="h4 mb-1">{{ stats.cursosCreados }}</h3>
+                <p class="text-muted mb-0">Cursos Creados</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card-hover h-100 animate-bounce-in" style="animation-delay: 0.2s;">
+              <div class="card-body text-center p-4">
+                <div class="rounded-circle bg-success bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" 
+                     style="width: 60px; height: 60px;">
+                  <i class="bi bi-people-fill text-success fs-3"></i>
+                </div>
+                <h3 class="h4 mb-1">{{ stats.totalEstudiantes }}</h3>
+                <p class="text-muted mb-0">Total Estudiantes</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card-hover h-100 animate-bounce-in" style="animation-delay: 0.3s;">
+              <div class="card-body text-center p-4">
+                <div class="rounded-circle bg-warning bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" 
+                     style="width: 60px; height: 60px;">
+                  <i class="bi bi-clipboard-check text-warning fs-3"></i>
+                </div>
+                <h3 class="h4 mb-1">{{ stats.tareasCreadas }}</h3>
+                <p class="text-muted mb-0">Tareas Creadas</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card-hover h-100 animate-bounce-in" style="animation-delay: 0.4s;">
+              <div class="card-body text-center p-4">
+                <div class="rounded-circle bg-danger bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" 
+                     style="width: 60px; height: 60px;">
+                  <i class="bi bi-file-earmark-check text-danger fs-3"></i>
+                </div>
+                <h3 class="h4 mb-1">{{ stats.entregasPendientes }}</h3>
+                <p class="text-muted mb-0">Por Calificar</p>
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <!-- Stats para Admin -->
+        <template v-else-if="authStore.isAdmin">
+          <div class="col-md-3">
+            <div class="card-hover h-100 animate-bounce-in" style="animation-delay: 0.1s;">
+              <div class="card-body text-center p-4">
+                <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" 
+                     style="width: 60px; height: 60px;">
+                  <i class="bi bi-people-fill text-primary fs-3"></i>
+                </div>
+                <h3 class="h4 mb-1">{{ stats.totalUsuarios }}</h3>
+                <p class="text-muted mb-0">Usuarios Totales</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card-hover h-100 animate-bounce-in" style="animation-delay: 0.2s;">
+              <div class="card-body text-center p-4">
+                <div class="rounded-circle bg-success bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" 
+                     style="width: 60px; height: 60px;">
+                  <i class="bi bi-book-fill text-success fs-3"></i>
+                </div>
+                <h3 class="h4 mb-1">{{ stats.totalCursos }}</h3>
+                <p class="text-muted mb-0">Cursos Activos</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card-hover h-100 animate-bounce-in" style="animation-delay: 0.3s;">
+              <div class="card-body text-center p-4">
+                <div class="rounded-circle bg-warning bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" 
+                     style="width: 60px; height: 60px;">
+                  <i class="bi bi-person-badge text-warning fs-3"></i>
+                </div>
+                <h3 class="h4 mb-1">{{ stats.totalDocentes }}</h3>
+                <p class="text-muted mb-0">Docentes</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card-hover h-100 animate-bounce-in" style="animation-delay: 0.4s;">
+              <div class="card-body text-center p-4">
+                <div class="rounded-circle bg-info bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" 
+                     style="width: 60px; height: 60px;">
+                  <i class="bi bi-mortarboard-fill text-info fs-3"></i>
+                </div>
+                <h3 class="h4 mb-1">{{ stats.totalEstudiantes }}</h3>
+                <p class="text-muted mb-0">Estudiantes</p>
+              </div>
+            </div>
+          </div>
+        </template>
       </div>
 
       <!-- Contenido Principal -->
@@ -184,7 +291,7 @@
                         <div class="loading-spinner me-2" style="width: 16px; height: 16px;"></div>
                         Guardando...
                       </span>
-                      <span v-else>
+                      <span v-else">
                         <i class="bi bi-check-circle me-2"></i>Guardar Cambios
                       </span>
                     </button>
@@ -211,16 +318,22 @@
                     <p class="fw-semibold mb-0">{{ authStore.user?.email }}</p>
                   </div>
                 </div>
-                <div class="col-12">
+                <div class="col-md-6">
                   <div class="glass-effect p-3 rounded-3">
                     <label class="text-muted small d-block mb-1">Teléfono</label>
                     <p class="fw-semibold mb-0">{{ form.telefono || 'No especificado' }}</p>
                   </div>
                 </div>
+                <div class="col-md-6">
+                  <div class="glass-effect p-3 rounded-3">
+                    <label class="text-muted small d-block mb-1">Rol</label>
+                    <p class="fw-semibold mb-0">{{ getRoleText(authStore.user?.rol) }}</p>
+                  </div>
+                </div>
                 <div class="col-12">
                   <div class="glass-effect p-3 rounded-3">
                     <label class="text-muted small d-block mb-1">Biografía</label>
-                    <p class="mb-0">{{ form.biografia || 'No has agregado una biografía aún.' }}</p>
+                    <p class="mb-0">{{ form.biografia || 'Sin biografía' }}</p>
                   </div>
                 </div>
               </div>
@@ -230,25 +343,26 @@
           <!-- Cambiar Contraseña -->
           <div class="card-hover mt-4 animate-slide-in" style="animation-delay: 0.6s;">
             <div class="card-header border-0 bg-transparent p-4">
-              <h5 class="mb-0 text-gradient">
-                <i class="bi bi-shield-lock me-2"></i>Seguridad
-              </h5>
+              <div class="d-flex align-items-center justify-content-between">
+                <h5 class="mb-0 text-gradient">
+                  <i class="bi bi-shield-lock me-2"></i>Seguridad
+                </h5>
+                <button 
+                  v-if="!cambiandoPassword"
+                  @click="cambiandoPassword = true"
+                  class="btn btn-outline-primary btn-sm">
+                  <i class="bi bi-key me-2"></i>Cambiar Contraseña
+                </button>
+              </div>
             </div>
             <div class="card-body p-4">
-              <button 
-                v-if="!cambiandoPassword"
-                @click="cambiandoPassword = true"
-                class="btn btn-outline-primary">
-                <i class="bi bi-key me-2"></i>Cambiar Contraseña
-              </button>
-
-              <form v-else @submit.prevent="cambiarContraseña" class="row g-3">
+              <form v-if="cambiandoPassword" @submit.prevent="cambiarContraseña" class="row g-3">
                 <div class="col-12">
                   <label class="form-label fw-semibold">Contraseña Actual</label>
                   <input
                     v-model="passwordForm.password_actual"
                     type="password"
-                    class="form-control form-control-lg border-0 bg-light"
+                    class="form-control border-0 bg-light"
                     required
                   />
                 </div>
@@ -257,7 +371,7 @@
                   <input
                     v-model="passwordForm.password_nueva"
                     type="password"
-                    class="form-control form-control-lg border-0 bg-light"
+                    class="form-control border-0 bg-light"
                     required
                   />
                 </div>
@@ -266,7 +380,7 @@
                   <input
                     v-model="passwordForm.password_confirmar"
                     type="password"
-                    class="form-control form-control-lg border-0 bg-light"
+                    class="form-control border-0 bg-light"
                     required
                   />
                 </div>
@@ -282,12 +396,17 @@
                       type="submit"
                       :disabled="passwordLoading"
                       class="btn btn-gradient">
-                      <span v-if="passwordLoading">Cambiando...</span>
-                      <span v-else>Cambiar Contraseña</span>
+                      <i class="bi bi-check-circle me-2"></i>Actualizar Contraseña
                     </button>
                   </div>
                 </div>
               </form>
+              <div v-else class="glass-effect p-3 rounded-3">
+                <p class="mb-0 text-muted">
+                  <i class="bi bi-info-circle me-2"></i>
+                  Tu contraseña fue actualizada por última vez hace 30 días
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -308,8 +427,8 @@
                     <i class="bi bi-check-circle text-success"></i>
                   </div>
                   <div class="flex-grow-1">
-                    <p class="mb-1 fw-semibold small">Tarea entregada</p>
-                    <p class="mb-0 text-muted small">Hace 2 horas</p>
+                    <p class="mb-1 fw-semibold small">Perfil actualizado</p>
+                    <p class="mb-0 text-muted small">Hace 1 hora</p>
                   </div>
                 </div>
                 <div class="d-flex align-items-start glass-effect p-3 rounded-3">
@@ -317,8 +436,8 @@
                     <i class="bi bi-book text-primary"></i>
                   </div>
                   <div class="flex-grow-1">
-                    <p class="mb-1 fw-semibold small">Nuevo curso iniciado</p>
-                    <p class="mb-0 text-muted small">Hace 1 día</p>
+                    <p class="mb-1 fw-semibold small">{{ authStore.isDocente ? 'Curso actualizado' : 'Clase completada' }}</p>
+                    <p class="mb-0 text-muted small">Hace 2 días</p>
                   </div>
                 </div>
                 <div class="d-flex align-items-start glass-effect p-3 rounded-3">
@@ -326,45 +445,8 @@
                     <i class="bi bi-star text-warning"></i>
                   </div>
                   <div class="flex-grow-1">
-                    <p class="mb-1 fw-semibold small">Calificación recibida</p>
-                    <p class="mb-0 text-muted small">Hace 2 días</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Logros -->
-          <div class="card-hover mt-4 animate-slide-in" style="animation-delay: 0.8s;">
-            <div class="card-header border-0 bg-transparent p-4">
-              <h5 class="mb-0 text-gradient">
-                <i class="bi bi-trophy me-2"></i>Logros
-              </h5>
-            </div>
-            <div class="card-body p-4">
-              <div class="row g-3">
-                <div class="col-6">
-                  <div class="text-center glass-effect p-3 rounded-3 hover-lift">
-                    <i class="bi bi-award-fill text-warning fs-1 mb-2"></i>
-                    <p class="mb-0 small fw-semibold">Estudiante del Mes</p>
-                  </div>
-                </div>
-                <div class="col-6">
-                  <div class="text-center glass-effect p-3 rounded-3 hover-lift">
-                    <i class="bi bi-fire text-danger fs-1 mb-2"></i>
-                    <p class="mb-0 small fw-semibold">Racha de 30 días</p>
-                  </div>
-                </div>
-                <div class="col-6">
-                  <div class="text-center glass-effect p-3 rounded-3 hover-lift">
-                    <i class="bi bi-book-half text-primary fs-1 mb-2"></i>
-                    <p class="mb-0 small fw-semibold">10 Cursos</p>
-                  </div>
-                </div>
-                <div class="col-6">
-                  <div class="text-center glass-effect p-3 rounded-3 hover-lift">
-                    <i class="bi bi-star-fill text-info fs-1 mb-2"></i>
-                    <p class="mb-0 small fw-semibold">Excelencia</p>
+                    <p class="mb-1 fw-semibold small">{{ authStore.isDocente ? 'Tarea calificada' : 'Calificación recibida' }}</p>
+                    <p class="mb-0 text-muted small">Hace 3 días</p>
                   </div>
                 </div>
               </div>
@@ -372,17 +454,29 @@
           </div>
 
           <!-- Acciones Rápidas -->
-          <div class="card-hover mt-4 animate-slide-in" style="animation-delay: 0.9s;">
+          <div class="card-hover mt-4 animate-slide-in" style="animation-delay: 0.8s;">
             <div class="card-body p-4">
               <h6 class="mb-3 text-gradient">
                 <i class="bi bi-lightning-fill me-2"></i>Acciones Rápidas
               </h6>
               <div class="d-grid gap-2">
-                <RouterLink to="/cursos" class="btn btn-outline-primary">
+                <RouterLink v-if="authStore.isEstudiante" to="/cursos" class="btn btn-outline-primary">
                   <i class="bi bi-book me-2"></i>Explorar Cursos
                 </RouterLink>
-                <RouterLink to="/calificaciones" class="btn btn-outline-success">
+                <RouterLink v-if="authStore.isEstudiante" to="/calificaciones" class="btn btn-outline-success">
                   <i class="bi bi-star me-2"></i>Ver Calificaciones
+                </RouterLink>
+                <RouterLink v-if="authStore.isDocente" to="/tareas/crear" class="btn btn-outline-primary">
+                  <i class="bi bi-plus-circle me-2"></i>Crear Tarea
+                </RouterLink>
+                <RouterLink v-if="authStore.isDocente" to="/entregas" class="btn btn-outline-warning">
+                  <i class="bi bi-file-earmark-check me-2"></i>Ver Entregas
+                </RouterLink>
+                <RouterLink v-if="authStore.isAdmin" to="/admin" class="btn btn-outline-primary">
+                  <i class="bi bi-gear me-2"></i>Panel Admin
+                </RouterLink>
+                <RouterLink to="/settings" class="btn btn-outline-info">
+                  <i class="bi bi-gear-fill me-2"></i>Configuración
                 </RouterLink>
                 <button class="btn btn-outline-danger" @click="cerrarSesion">
                   <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
@@ -398,7 +492,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, RouterLink } from 'vue-router'
 import { authStore } from '../stores/auth'
 import Layout from '../components/Layout.vue'
 
@@ -422,6 +516,24 @@ const passwordForm = ref({
   password_confirmar: ''
 })
 
+const stats = ref({
+  // Estudiante
+  cursosInscritos: 3,
+  tareasEntregadas: 15,
+  promedioGeneral: 88.5,
+  certificados: 2,
+  // Docente
+  cursosCreados: 3,
+  totalEstudiantes: 105,
+  tareasCreadas: 24,
+  entregasPendientes: 8,
+  // Admin
+  totalUsuarios: 156,
+  totalCursos: 12,
+  totalDocentes: 8,
+  totalEstudiantes: 142
+})
+
 const userInitials = computed(() => {
   if (!authStore.user) return ''
   return `${authStore.user.nombre[0]}${authStore.user.apellido[0]}`.toUpperCase()
@@ -438,12 +550,18 @@ const getRoleText = (rol) => {
 
 const cargarPerfil = async () => {
   try {
+    const biografias = {
+      ESTUDIANTE: 'Apasionado por la tecnología y el aprendizaje continuo. Me encanta resolver problemas complejos y aprender nuevas habilidades.',
+      DOCENTE: 'Educador comprometido con la excelencia académica y el desarrollo integral de mis estudiantes. Especializado en metodologías innovadoras de enseñanza.',
+      ADMIN: 'Administrador del sistema LMS. Enfocado en optimizar la experiencia educativa y garantizar el correcto funcionamiento de la plataforma.'
+    }
+
     form.value = {
       nombre: authStore.user?.nombre || '',
       apellido: authStore.user?.apellido || '',
       email: authStore.user?.email || '',
       telefono: '+57 300 123 4567',
-      biografia: 'Apasionado por la tecnología y el aprendizaje continuo. Me encanta resolver problemas complejos y aprender nuevas habilidades.'
+      biografia: biografias[authStore.user?.rol] || ''
     }
   } catch (error) {
     console.error('Error cargando perfil:', error)

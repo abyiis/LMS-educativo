@@ -642,3 +642,280 @@
   .bg-gradient-primary {
     background: var(--primary-gradient) !important;
   }
+
+  /* ========================================
+   MODO OSCURO - Agregar al final de index.css
+   ======================================== */
+
+/* Variables para modo oscuro */
+:root {
+  --bg-light: #ffffff;
+  --bg-dark: #1a1a2e;
+  --text-light: #333333;
+  --text-dark: #e0e0e0;
+  --card-light: rgba(255, 255, 255, 0.9);
+  --card-dark: rgba(30, 30, 46, 0.9);
+  --glass-light: rgba(255, 255, 255, 0.7);
+  --glass-dark: rgba(30, 30, 46, 0.7);
+}
+
+/* Modo oscuro activado */
+body.dark-mode {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: var(--text-dark);
+}
+
+/* Ajustes de fondo y tarjetas en modo oscuro */
+body.dark-mode .glass-effect {
+  background: var(--glass-dark) !important;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .card,
+body.dark-mode .card-hover {
+  background: var(--card-dark) !important;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-dark);
+}
+
+body.dark-mode .card-body,
+body.dark-mode .card-header {
+  background-color: transparent !important;
+}
+
+/* Navbar en modo oscuro */
+body.dark-mode .navbar-custom {
+  background: rgba(26, 26, 46, 0.95) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .navbar-brand,
+body.dark-mode .nav-link {
+  color: var(--text-dark) !important;
+}
+
+body.dark-mode .nav-link:hover,
+body.dark-mode .nav-link.active {
+  color: #667eea !important;
+}
+
+/* Dropdowns en modo oscuro */
+body.dark-mode .dropdown-menu {
+  background: rgba(30, 30, 46, 0.95) !important;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .dropdown-item {
+  color: var(--text-dark);
+}
+
+body.dark-mode .dropdown-item:hover {
+  background: rgba(102, 126, 234, 0.2);
+  color: #667eea;
+}
+
+/* Formularios en modo oscuro */
+body.dark-mode .form-control,
+body.dark-mode .form-select {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-dark);
+}
+
+body.dark-mode .form-control:focus,
+body.dark-mode .form-select:focus {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #667eea;
+  color: var(--text-dark);
+}
+
+body.dark-mode .form-control::placeholder {
+  color: rgba(224, 224, 224, 0.5);
+}
+
+/* Botones en modo oscuro */
+body.dark-mode .btn-outline-primary {
+  color: #667eea;
+  border-color: #667eea;
+}
+
+body.dark-mode .btn-outline-primary:hover {
+  background: #667eea;
+  color: white;
+}
+
+/* Textos en modo oscuro */
+body.dark-mode .text-muted {
+  color: rgba(224, 224, 224, 0.6) !important;
+}
+
+body.dark-mode h1, 
+body.dark-mode h2, 
+body.dark-mode h3, 
+body.dark-mode h4, 
+body.dark-mode h5, 
+body.dark-mode h6 {
+  color: var(--text-dark);
+}
+
+/* Tablas en modo oscuro */
+body.dark-mode .table {
+  color: var(--text-dark);
+}
+
+body.dark-mode .table-hover tbody tr:hover {
+  background: rgba(102, 126, 234, 0.1);
+}
+
+/* List group en modo oscuro */
+body.dark-mode .list-group-item {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-dark);
+}
+
+body.dark-mode .list-group-item:hover {
+  background: rgba(102, 126, 234, 0.1);
+}
+
+/* Footer en modo oscuro */
+body.dark-mode footer {
+  background: rgba(26, 26, 46, 0.9) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Badges en modo oscuro */
+body.dark-mode .badge {
+  color: white;
+}
+
+/* Progress bars en modo oscuro */
+body.dark-mode .progress {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Alertas en modo oscuro */
+body.dark-mode .alert {
+  background: rgba(102, 126, 234, 0.1);
+  border-color: rgba(102, 126, 234, 0.3);
+  color: var(--text-dark);
+}
+
+/* Modals en modo oscuro */
+body.dark-mode .modal-content {
+  background: var(--card-dark);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .modal-header {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .modal-footer {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Offcanvas en modo oscuro */
+body.dark-mode .offcanvas {
+  background: rgba(26, 26, 46, 0.98) !important;
+}
+
+/* Paginación en modo oscuro */
+body.dark-mode .pagination .page-link {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-dark);
+}
+
+body.dark-mode .pagination .page-link:hover {
+  background: rgba(102, 126, 234, 0.2);
+  border-color: #667eea;
+}
+
+body.dark-mode .pagination .page-item.active .page-link {
+  background: #667eea;
+  border-color: #667eea;
+}
+
+/* Border adjustments */
+body.dark-mode .border,
+body.dark-mode .border-top,
+body.dark-mode .border-bottom {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Transición suave entre temas */
+body,
+.card,
+.glass-effect,
+.navbar-custom,
+.form-control,
+.form-select,
+.dropdown-menu,
+.list-group-item {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* ========================================
+   FIX PARA TEXTOS EN MODO OSCURO
+   Agregar al final de index.css
+   ======================================== */
+
+/* Asegurar que los títulos principales sean siempre visibles */
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4,
+body.dark-mode h5,
+body.dark-mode h6 {
+  color: #e0e0e0 !important;
+}
+
+/* Permitir que los text-gradient funcionen correctamente */
+body.dark-mode .text-gradient {
+  /* El gradiente se aplica dinámicamente desde JS */
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+/* Mejorar contraste de textos pequeños en modo oscuro */
+body.dark-mode .card-text,
+body.dark-mode p:not(.text-gradient) {
+  color: rgba(224, 224, 224, 0.9) !important;
+}
+
+/* Asegurar que los labels sean visibles */
+body.dark-mode .form-label,
+body.dark-mode label {
+  color: #e0e0e0 !important;
+}
+
+/* Mejorar visibilidad de placeholders */
+body.dark-mode .form-control::placeholder,
+body.dark-mode .form-select::placeholder {
+  color: rgba(224, 224, 224, 0.4) !important;
+}
+
+/* Corregir badges en modo oscuro */
+body.dark-mode .badge {
+  color: white !important;
+}
+
+/* Mejorar contraste de nav-link */
+body.dark-mode .nav-link {
+  color: rgba(224, 224, 224, 0.8) !important;
+}
+
+body.dark-mode .nav-link:hover,
+body.dark-mode .nav-link.active {
+  /* El color se aplica dinámicamente desde JS */
+  opacity: 1 !important;
+}
+
+/* Asegurar que dropdown items sean visibles */
+body.dark-mode .dropdown-item {
+  color: #e0e0e0 !important;
+}
