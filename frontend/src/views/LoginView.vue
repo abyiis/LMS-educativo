@@ -157,7 +157,9 @@ const handleLogin = async () => {
   const result = await authStore.login(form.value)
   
   if (result.success) {
-    router.push('/dashboard')
+    // Redirigir según rol: admins a /admin, docentes a /tareas, otros a /dashboard
+    const redirectTo = authStore.isAdmin ? '/admin' : (authStore.isDocente ? '/tareas' : '/dashboard')
+    router.push(redirectTo)
   }
 }
 </script>

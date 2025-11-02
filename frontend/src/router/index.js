@@ -4,7 +4,12 @@ import { authStore } from '../stores/auth'
 const routes = [
   {
     path: '/',
-    redirect: '/dashboard'
+    redirect: (to) => {
+      // Los admins van a /admin, los docentes a /tareas, otros a /dashboard
+      if (authStore.isAdmin) return '/admin'
+      if (authStore.isDocente) return '/tareas'
+      return '/dashboard'
+    }
   },
   {
     path: '/login',
@@ -22,13 +27,19 @@ const routes = [
     path: '/dashboard',
     name: 'Dashboard',
     component: () => import('../views/DashboardView.vue'),
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true, excludeRole: ['ADMIN', 'DOCENTE'] }
   },
   {
     path: '/cursos',
     name: 'Cursos',
     component: () => import('../views/CursosView.vue'),
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/cursos/crear',
+    name: 'CrearCurso',
+    component: () => import('../views/CrearCursoView.vue'),
+    meta: { requiresAuth: true, requiresRole: 'ADMIN' }
   },
   {
     path: '/cursos/:id',
@@ -49,6 +60,12 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/tareas/crear',
+    name: 'CrearTarea',
+    component: () => import('../views/CrearTareaView.vue'),
+    meta: { requiresAuth: true, requiresRole: 'DOCENTE' }
+  },
+  {
     path: '/tareas/:id',
     name: 'TareaDetail',
     component: () => import('../views/TareaDetailView.vue'),
@@ -64,19 +81,19 @@ const routes = [
     path: '/certificados',
     name: 'Certificados',
     component: () => import('../views/CertificadosView.vue'),
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true, excludeRole: 'ADMIN' }
   },
   {
     path: '/calendario',
     name: 'Calendario',
     component: () => import('../views/CalendarioView.vue'),
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true, excludeRole: 'ADMIN' }
   },
   {
     path: '/progreso',
     name: 'Progreso',
     component: () => import('../views/ProgresoView.vue'),
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true, excludeRole: 'ADMIN' }
   },
   {
     path: '/profile',
@@ -110,6 +127,17 @@ const router = createRouter({
 
 // Guard de navegación
 router.beforeEach(async (to, from, next) => {
+  // Si es la ruta raíz, redirigir según rol
+  if (to.path === '/' || to.path === '') {
+    if (authStore.isAuthenticated || await authStore.checkAuth()) {
+      const redirectTo = authStore.isAdmin ? '/admin' : (authStore.isDocente ? '/tareas' : '/dashboard')
+      next(redirectTo)
+      return
+    }
+    next('/login')
+    return
+  }
+  
   // Verificar autenticación
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     const isAuth = await authStore.checkAuth()
@@ -121,14 +149,31 @@ router.beforeEach(async (to, from, next) => {
 
   // Redirigir usuarios autenticados
   if (to.meta.requiresGuest && authStore.isAuthenticated) {
-    next('/dashboard')
+    // Admin va a /admin, docentes a /tareas, otros a /dashboard
+    const redirectTo = authStore.isAdmin ? '/admin' : (authStore.isDocente ? '/tareas' : '/dashboard')
+    next(redirectTo)
     return
   }
 
   // Verificar roles
   if (to.meta.requiresRole && authStore.user?.rol !== to.meta.requiresRole) {
-    next('/dashboard')
+    // Admin va a /admin, docentes a /tareas, otros a /dashboard
+    const redirectTo = authStore.isAdmin ? '/admin' : (authStore.isDocente ? '/tareas' : '/dashboard')
+    next(redirectTo)
     return
+  }
+
+  // Verificar exclusión de roles
+  if (to.meta.excludeRole) {
+    const excludedRoles = Array.isArray(to.meta.excludeRole) 
+      ? to.meta.excludeRole 
+      : [to.meta.excludeRole]
+    if (excludedRoles.includes(authStore.user?.rol)) {
+      // Admin va a /admin, docentes a /tareas, otros a /dashboard
+      const redirectTo = authStore.isAdmin ? '/admin' : (authStore.isDocente ? '/tareas' : '/dashboard')
+      next(redirectTo)
+      return
+    }
   }
 
   next()

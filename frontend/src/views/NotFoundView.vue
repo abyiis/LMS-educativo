@@ -7,8 +7,8 @@
         <p class="text-gray-600 mb-8">
           La página que buscas no existe o ha sido movida.
         </p>
-        <RouterLink to="/dashboard" class="btn-primary">
-          Volver al Dashboard
+        <RouterLink :to="homeRoute" class="btn-primary">
+          Volver al inicio
         </RouterLink>
       </div>
     </div>
@@ -16,5 +16,11 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import Layout from '../components/Layout.vue'
+import { authStore } from '../stores/auth'
+
+const homeRoute = computed(() => {
+  return authStore.isAdmin ? '/admin' : (authStore.isDocente ? '/tareas' : '/dashboard')
+})
 </script>

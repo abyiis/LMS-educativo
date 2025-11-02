@@ -13,7 +13,7 @@
                 <p class="text-muted mb-0 fs-5">Explora todos los cursos disponibles y comienza tu aprendizaje</p>
               </div>
               <RouterLink
-                v-if="authStore.isAdmin || authStore.isDocente"
+                v-if="authStore.isAdmin"
                 to="/cursos/crear"
                 class="btn btn-gradient hover-lift"
               >
@@ -115,7 +115,7 @@
             {{ busqueda ? 'No se encontraron cursos con ese criterio de búsqueda' : 'Parece que no hay cursos para mostrar en este momento' }}
           </p>
           <RouterLink
-            v-if="authStore.isAdmin || authStore.isDocente"
+            v-if="authStore.isAdmin"
             to="/cursos/crear"
             class="btn btn-gradient"
           >
@@ -180,7 +180,7 @@
                 </div>
               </div>
 
-              <div class="d-grid">
+              <div class="d-grid gap-2">
                 <RouterLink
                   :to="`/cursos/${curso.id}`"
                   class="btn btn-gradient hover-lift"
@@ -188,6 +188,14 @@
                   <i class="bi bi-arrow-right me-2"></i>
                   Ver Curso
                 </RouterLink>
+                <button
+                  v-if="authStore.isAdmin"
+                  @click="toggleActivoCurso(curso.id, !curso.activo)"
+                  :class="curso.activo ? 'btn btn-outline-danger hover-lift' : 'btn btn-outline-success hover-lift'"
+                >
+                  <i :class="curso.activo ? 'bi bi-pause-circle' : 'bi bi-play-circle'" class="me-2"></i>
+                  {{ curso.activo ? 'Desactivar' : 'Activar' }}
+                </button>
               </div>
             </div>
           </div>
@@ -233,6 +241,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { authStore } from '../stores/auth'
 import Layout from '../components/Layout.vue'
+import { api } from '../services/api'
 
 const loading = ref(true)
 const cursos = ref([])
@@ -446,6 +455,31 @@ const cambiarPagina = (page) => {
   if (page >= 1 && page <= meta.value.totalPages) {
     meta.value.page = page
     window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+}
+
+const toggleActivoCurso = async (cursoId, nuevoEstado) => {
+  try {
+    const curso = cursos.value.find(c => c.id === cursoId)
+    if (!curso) return
+    
+    const estadoAnterior = curso.activo
+    
+    // Optimistic update
+    curso.activo = nuevoEstado
+    
+    try {
+      // Llamar a la API
+      await api.patch(`/cursos/${cursoId}`, { activo: nuevoEstado })
+    } catch (error) {
+      // Revertir en caso de error
+      curso.activo = estadoAnterior
+      console.error('Error al actualizar el curso:', error)
+      alert('Hubo un error al actualizar el estado del curso')
+    }
+  } catch (error) {
+    console.error('Error al cambiar estado del curso:', error)
+    alert('Hubo un error al cambiar el estado del curso')
   }
 }
 

@@ -201,12 +201,11 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
+import { authStore } from '@/stores/auth'
 import { api } from '@/services/api'
 import Layout from '@/components/Layout.vue'
 
 const route = useRoute()
-const authStore = useAuthStore()
 const loading = ref(true)
 const tarea = ref(null)
 const entregas = ref([])

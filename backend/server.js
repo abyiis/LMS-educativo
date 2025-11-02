@@ -471,7 +471,7 @@ app.get('/api/v1/cursos/:id', authenticateToken, (req, res) => {
   });
 });
 
-app.post('/api/v1/cursos', authenticateToken, requireRole('ADMIN', 'DOCENTE'), (req, res) => {
+app.post('/api/v1/cursos', authenticateToken, requireRole('ADMIN'), (req, res) => {
   const { titulo, descripcion, codigo } = req.body;
 
   if (!titulo || !codigo) {
@@ -681,7 +681,7 @@ app.get('/api/v1/tareas/:id', authenticateToken, (req, res) => {
   });
 });
 
-app.post('/api/v1/tareas', authenticateToken, requireRole('ADMIN', 'DOCENTE'), (req, res) => {
+app.post('/api/v1/tareas', authenticateToken, requireRole('DOCENTE'), (req, res) => {
   const { titulo, descripcion, fechaLimite, puntaje, cursoId, claseId } = req.body;
 
   if (!titulo || !fechaLimite || !puntaje || !cursoId) {
@@ -773,11 +773,103 @@ app.patch('/api/v1/entregas/:id', authenticateToken, (req, res) => {
   res.json(entrega);
 });
 
+// Obtener todas las entregas de un curso específico (para docentes)
+app.get('/api/v1/cursos/:cursoId/entregas', authenticateToken, (req, res) => {
+  const cursoId = parseInt(req.params.cursoId);
+  
+  // Verificar que el curso existe
+  const curso = cursos.find(c => c.id === cursoId);
+  if (!curso) {
+    return res.status(404).json({ message: 'Curso no encontrado' });
+  }
+  
+  // Verificar permisos: solo docentes y admins pueden ver entregas de cursos
+  // Si es docente, verificar que es el creador del curso o tiene acceso
+  if (req.user.rol === 'ESTUDIANTE') {
+    return res.status(403).json({ message: 'No tienes permisos para ver entregas de este curso' });
+  }
+  
+  // Obtener todas las tareas del curso
+  const tareasDelCurso = tareas.filter(t => t.cursoId === cursoId);
+  const tareasIds = tareasDelCurso.map(t => t.id);
+  
+  // Obtener todas las entregas de esas tareas
+  const entregasDelCurso = entregas
+    .filter(e => tareasIds.includes(e.tareaId))
+    .map(entrega => {
+      const tarea = tareas.find(t => t.id === entrega.tareaId);
+      const estudiante = usuarios.find(u => u.id === entrega.estudianteId);
+      
+      return {
+        ...entrega,
+        tarea: tarea ? {
+          id: tarea.id,
+          titulo: tarea.titulo,
+          fechaLimite: tarea.fechaLimite,
+          puntaje: tarea.puntaje,
+          cursoId: tarea.cursoId
+        } : null,
+        estudiante: estudiante ? {
+          id: estudiante.id,
+          nombre: estudiante.nombre,
+          apellido: estudiante.apellido,
+          email: estudiante.email
+        } : null
+      };
+    });
+  
+  // Agrupar por tarea para facilitar la visualización
+  const entregasAgrupadas = tareasDelCurso.map(tarea => {
+    const entregasTarea = entregasDelCurso.filter(e => e.tareaId === tarea.id);
+    return {
+      tarea: {
+        id: tarea.id,
+        titulo: tarea.titulo,
+        descripcion: tarea.descripcion,
+        fechaLimite: tarea.fechaLimite,
+        puntaje: tarea.puntaje,
+        cursoId: tarea.cursoId
+      },
+      entregas: entregasTarea,
+      totalEntregas: entregasTarea.length,
+      entregasCalificadas: entregasTarea.filter(e => e.estado === 'CALIFICADA').length,
+      entregasPendientes: entregasTarea.filter(e => e.estado === 'ENTREGADA').length
+    };
+  });
+  
+  res.json({
+    curso: {
+      id: curso.id,
+      titulo: curso.titulo,
+      codigo: curso.codigo
+    },
+    entregas: entregasAgrupadas,
+    total: entregasDelCurso.length
+  });
+});
+
 // ==================== RUTAS DE MATRÍCULAS ====================
 app.post('/api/v1/matriculas', authenticateToken, (req, res) => {
   const { cursoId, estudianteId } = req.body;
   
-  const idEstudiante = req.user.rol === 'ESTUDIANTE' ? req.user.id : estudianteId;
+  // Los estudiantes solo pueden matricularse a sí mismos
+  // Los docentes/ADMIN pueden añadir estudiantes especificando el estudianteId
+  let idEstudiante;
+  
+  if (req.user.rol === 'ESTUDIANTE') {
+    idEstudiante = req.user.id;
+    // Los estudiantes no pueden especificar otro estudianteId
+    if (estudianteId && estudianteId !== req.user.id) {
+      return res.status(403).json({ message: 'No tienes permisos para matricular a otros estudiantes' });
+    }
+  } else if (req.user.rol === 'DOCENTE' || req.user.rol === 'ADMIN') {
+    if (!estudianteId) {
+      return res.status(400).json({ message: 'Debes especificar el ID del estudiante' });
+    }
+    idEstudiante = parseInt(estudianteId);
+  } else {
+    return res.status(403).json({ message: 'No tienes permisos para crear matrículas' });
+  }
 
   if (!cursoId || !idEstudiante) {
     return res.status(400).json({ message: 'Curso y estudiante son requeridos' });
@@ -788,12 +880,27 @@ app.post('/api/v1/matriculas', authenticateToken, (req, res) => {
     return res.status(404).json({ message: 'Curso no encontrado' });
   }
 
+  // Verificar que el estudiante exista y tenga rol ESTUDIANTE
+  const estudiante = usuarios.find(u => u.id === idEstudiante && u.activo);
+  if (!estudiante) {
+    return res.status(404).json({ message: 'Estudiante no encontrado' });
+  }
+  
+  if (estudiante.rol !== 'ESTUDIANTE') {
+    return res.status(400).json({ message: 'El usuario especificado no es un estudiante' });
+  }
+
+  // Si es DOCENTE, verificar que sea el creador del curso
+  if (req.user.rol === 'DOCENTE' && curso.creadorId !== req.user.id) {
+    return res.status(403).json({ message: 'Solo puedes añadir estudiantes a tus propios cursos' });
+  }
+
   const matriculaExistente = matriculas.find(
     m => m.cursoId === cursoId && m.estudianteId === idEstudiante && m.activa
   );
 
   if (matriculaExistente) {
-    return res.status(400).json({ message: 'Ya estás matriculado en este curso' });
+    return res.status(400).json({ message: 'El estudiante ya está matriculado en este curso' });
   }
 
   const nuevaMatricula = {
@@ -806,7 +913,13 @@ app.post('/api/v1/matriculas', authenticateToken, (req, res) => {
   };
 
   matriculas.push(nuevaMatricula);
-  res.status(201).json(nuevaMatricula);
+  
+  // Incluir información del estudiante en la respuesta
+  const { password: _, ...estudianteSinPassword } = estudiante;
+  res.status(201).json({
+    ...nuevaMatricula,
+    estudiante: estudianteSinPassword
+  });
 });
 
 app.get('/api/v1/matriculas/mis-cursos', authenticateToken, requireRole('ESTUDIANTE'), (req, res) => {
@@ -823,6 +936,81 @@ app.get('/api/v1/matriculas/mis-cursos', authenticateToken, requireRole('ESTUDIA
   });
 
   res.json(cursosConInfo);
+});
+
+// Obtener estudiantes matriculados en un curso (para docentes)
+app.get('/api/v1/cursos/:id/estudiantes', authenticateToken, (req, res) => {
+  const cursoId = parseInt(req.params.id);
+  const curso = cursos.find(c => c.id === cursoId);
+  
+  if (!curso) {
+    return res.status(404).json({ message: 'Curso no encontrado' });
+  }
+
+  // Solo el docente creador, ADMIN o estudiantes matriculados pueden ver la lista
+  if (req.user.rol === 'DOCENTE' && curso.creadorId !== req.user.id) {
+    return res.status(403).json({ message: 'No tienes permisos para ver los estudiantes de este curso' });
+  }
+
+  const matriculasCurso = matriculas.filter(
+    m => m.cursoId === cursoId && m.activa
+  );
+
+  const estudiantes = matriculasCurso.map(matricula => {
+    const estudiante = usuarios.find(u => u.id === matricula.estudianteId);
+    if (!estudiante) return null;
+    
+    const { password: _, ...estudianteSinPassword } = estudiante;
+    return {
+      ...estudianteSinPassword,
+      matriculaId: matricula.id,
+      fechaMatricula: matricula.createdAt
+    };
+  }).filter(Boolean);
+
+  res.json({
+    curso: {
+      id: curso.id,
+      titulo: curso.titulo,
+      codigo: curso.codigo
+    },
+    estudiantes,
+    total: estudiantes.length
+  });
+});
+
+// Obtener lista de estudiantes disponibles (para docentes/ADMIN)
+app.get('/api/v1/admin/estudiantes', authenticateToken, requireRole('ADMIN', 'DOCENTE'), (req, res) => {
+  const { search, page = 1, limit = 50 } = req.query;
+  
+  let estudiantes = usuarios.filter(u => u.rol === 'ESTUDIANTE' && u.activo);
+  
+  // Filtrar por búsqueda si se proporciona
+  if (search) {
+    const searchLower = search.toLowerCase();
+    estudiantes = estudiantes.filter(e => 
+      e.nombre.toLowerCase().includes(searchLower) ||
+      e.apellido.toLowerCase().includes(searchLower) ||
+      e.email.toLowerCase().includes(searchLower) ||
+      e.id.toString().includes(searchLower)
+    );
+  }
+
+  const estudiantesSinPassword = estudiantes.map(({ password, ...estudiante }) => estudiante);
+
+  const start = (page - 1) * limit;
+  const end = start + parseInt(limit);
+  const paginados = estudiantesSinPassword.slice(start, end);
+
+  res.json({
+    data: paginados,
+    meta: {
+      total: estudiantesSinPassword.length,
+      page: parseInt(page),
+      limit: parseInt(limit),
+      totalPages: Math.ceil(estudiantesSinPassword.length / limit)
+    }
+  });
 });
 
 // ==================== RUTAS DE MENSAJES ====================

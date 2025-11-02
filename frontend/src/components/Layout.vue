@@ -4,7 +4,7 @@
     <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
       <div class="container-fluid">
         <!-- Brand -->
-        <router-link to="/dashboard" class="navbar-brand fw-bold text-gradient animate-bounce-in">
+        <router-link :to="homeRoute" class="navbar-brand fw-bold text-gradient animate-bounce-in">
           <i class="bi bi-mortarboard-fill me-2 pulse"></i>
           LMS Educativo
         </router-link>
@@ -17,7 +17,7 @@
         <!-- Nav items -->
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav me-auto">
-            <li class="nav-item animate-slide-in" style="animation-delay: 0.1s;">
+            <li v-if="!authStore.isAdmin && !authStore.isDocente" class="nav-item animate-slide-in" style="animation-delay: 0.1s;">
               <router-link to="/dashboard" class="nav-link" active-class="active">
                 <i class="bi bi-house-fill me-1"></i> Dashboard
               </router-link>
@@ -27,22 +27,22 @@
                 <i class="bi bi-book-fill me-1"></i> Cursos
               </router-link>
             </li>
-            <li class="nav-item animate-slide-in" style="animation-delay: 0.3s;">
+            <li v-if="!authStore.isAdmin" class="nav-item animate-slide-in" style="animation-delay: 0.3s;">
               <router-link to="/tareas" class="nav-link" active-class="active">
                 <i class="bi bi-clipboard-check-fill me-1"></i> Tareas
               </router-link>
             </li>
-            <li v-if="!authStore.isDocente" class="nav-item animate-slide-in" style="animation-delay: 0.4s;">
+            <li v-if="!authStore.isDocente && !authStore.isAdmin" class="nav-item animate-slide-in" style="animation-delay: 0.4s;">
               <router-link to="/calificaciones" class="nav-link" active-class="active">
                 <i class="bi bi-star-fill me-1"></i> Calificaciones
               </router-link>
             </li>
-            <li v-if="!authStore.isDocente" class="nav-item animate-slide-in" style="animation-delay: 0.5s;">
+            <li v-if="!authStore.isDocente && !authStore.isAdmin" class="nav-item animate-slide-in" style="animation-delay: 0.5s;">
               <router-link to="/certificados" class="nav-link" active-class="active">
                 <i class="bi bi-award-fill me-1"></i> Certificados
               </router-link>
             </li>
-            <li class="nav-item dropdown animate-slide-in" style="animation-delay: 0.6s;">
+            <li v-if="!authStore.isDocente && !authStore.isAdmin" class="nav-item dropdown animate-slide-in" style="animation-delay: 0.6s;">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                 <i class="bi bi-grid-fill me-1"></i> Más
               </a>
@@ -91,7 +91,7 @@
                   <i class="bi bi-person-fill me-2 text-primary"></i> Mi Perfil
                 </router-link>
               </li>
-              <li v-if="!authStore.isDocente">
+              <li v-if="!authStore.isDocente && !authStore.isAdmin">
                 <router-link class="dropdown-item hover-lift" to="/certificados">
                   <i class="bi bi-award-fill me-2 text-warning"></i> Mis Certificados
                 </router-link>
@@ -136,27 +136,27 @@
         <h5 class="offcanvas-title text-gradient">Menú</h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
       </div>
-      <div class="offcanvas-body">
+        <div class="offcanvas-body">
         <div class="d-flex flex-column gap-3">
-          <router-link to="/dashboard" class="btn btn-outline-primary text-start" data-bs-dismiss="offcanvas">
+          <router-link v-if="!authStore.isAdmin && !authStore.isDocente" to="/dashboard" class="btn btn-outline-primary text-start" data-bs-dismiss="offcanvas">
             <i class="bi bi-house-fill me-2"></i> Dashboard
           </router-link>
           <router-link to="/cursos" class="btn btn-outline-primary text-start" data-bs-dismiss="offcanvas">
             <i class="bi bi-book-fill me-2"></i> Cursos
           </router-link>
-          <router-link to="/tareas" class="btn btn-outline-primary text-start" data-bs-dismiss="offcanvas">
+          <router-link v-if="!authStore.isAdmin" to="/tareas" class="btn btn-outline-primary text-start" data-bs-dismiss="offcanvas">
             <i class="bi bi-clipboard-check-fill me-2"></i> Tareas
           </router-link>
-          <router-link v-if="!authStore.isDocente" to="/calificaciones" class="btn btn-outline-primary text-start" data-bs-dismiss="offcanvas">
+          <router-link v-if="!authStore.isDocente && !authStore.isAdmin" to="/calificaciones" class="btn btn-outline-primary text-start" data-bs-dismiss="offcanvas">
             <i class="bi bi-star-fill me-2"></i> Calificaciones
           </router-link>
-          <router-link v-if="!authStore.isDocente" to="/certificados" class="btn btn-outline-primary text-start" data-bs-dismiss="offcanvas">
+          <router-link v-if="!authStore.isDocente && !authStore.isAdmin" to="/certificados" class="btn btn-outline-primary text-start" data-bs-dismiss="offcanvas">
             <i class="bi bi-award-fill me-2"></i> Certificados
           </router-link>
-          <router-link to="/calendario" class="btn btn-outline-primary text-start" data-bs-dismiss="offcanvas">
+          <router-link v-if="!authStore.isDocente && !authStore.isAdmin" to="/calendario" class="btn btn-outline-primary text-start" data-bs-dismiss="offcanvas">
             <i class="bi bi-calendar-event me-2"></i> Calendario
           </router-link>
-          <router-link to="/progreso" class="btn btn-outline-primary text-start" data-bs-dismiss="offcanvas">
+          <router-link v-if="!authStore.isDocente && !authStore.isAdmin" to="/progreso" class="btn btn-outline-primary text-start" data-bs-dismiss="offcanvas">
             <i class="bi bi-graph-up-arrow me-2"></i> Mi Progreso
           </router-link>
           <router-link v-if="authStore.isAdmin" to="/admin" class="btn btn-outline-primary text-start" data-bs-dismiss="offcanvas">
@@ -299,6 +299,10 @@ const router = useRouter()
 const userInitials = computed(() => {
   if (!authStore.user) return ''
   return `${authStore.user.nombre[0]}${authStore.user.apellido[0]}`.toUpperCase()
+})
+
+const homeRoute = computed(() => {
+  return authStore.isAdmin ? '/admin' : (authStore.isDocente ? '/tareas' : '/dashboard')
 })
 
 const getRoleText = (rol) => {

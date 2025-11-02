@@ -13,7 +13,7 @@
                 <p class="text-muted mb-0 fs-5">Gestiona tus tareas asignadas y entregas</p>
               </div>
               <RouterLink
-                v-if="authStore.isAdmin || authStore.isDocente"
+                v-if="authStore.isDocente"
                 to="/tareas/crear"
                 class="btn btn-gradient hover-lift"
               >
@@ -81,7 +81,7 @@
           <h4 class="text-muted mb-3">No hay tareas disponibles</h4>
           <p class="text-muted mb-4">Las tareas aparecerán aquí cuando estén asignadas</p>
           <RouterLink
-            v-if="authStore.isAdmin || authStore.isDocente"
+            v-if="authStore.isDocente"
             to="/tareas/crear"
             class="btn btn-gradient"
           >
