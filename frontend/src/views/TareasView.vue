@@ -154,7 +154,7 @@
               <div class="d-flex gap-2">
                 <RouterLink
                   :to="`/tareas/${tarea.id}`"
-                  class="btn btn-gradient flex-grow-1"
+                  class="btn btn-gradient flex-grow-1 text-decoration-none"
                 >
                   <i class="bi bi-eye me-2"></i>Ver Detalles
                 </RouterLink>
@@ -209,8 +209,9 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, RouterLink } from 'vue-router'
 import { authStore } from '../stores/auth'
+import { api } from '../services/api'
 import Layout from '../components/Layout.vue'
 
 const router = useRouter()
@@ -326,10 +327,28 @@ const cargarTareas = async () => {
   try {
     loading.value = true
     
-    // Simular carga
+    // Intentar cargar desde la API real
+    try {
+      const response = await api.get('/tareas')
+      const tareasData = response.data?.data || response.data || []
+      
+      if (tareasData.length > 0) {
+        tareas.value = tareasData
+        meta.value = response.data?.meta || {
+          total: tareasData.length,
+          page: 1,
+          limit: 10,
+          totalPages: 1
+        }
+        return
+      }
+    } catch (apiError) {
+      console.warn('Error cargando tareas desde API, usando datos demo:', apiError)
+    }
+    
+    // Datos demo como fallback
     await new Promise(resolve => setTimeout(resolve, 600))
     
-    // Datos demo con variedad
     const tareasDemo = [
       {
         id: 1,

@@ -148,6 +148,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
+import { RouterLink } from 'vue-router'
+import { api } from '../services/api'
 // @ts-ignore
 import Layout from '../components/Layout.vue'
 
@@ -244,58 +246,95 @@ const formatDate = (dateString: string) => {
 }
 
 const cargarCalificaciones = async () => {
+  loading.value = true
+  
   try {
-    loading.value = true
+    // Intentar cargar desde la API real
+    const response = await api.get('/calificaciones/mis-calificaciones')
+    let calificacionesData = response.data || []
     
-    // Simular carga de datos
-    await new Promise(resolve => setTimeout(resolve, 500))
+    // Si no hay calificaciones desde la API, usar datos demo para estudiantes
+    if (calificacionesData.length === 0) {
+      calificacionesData = [
+          {
+            id: 1,
+            puntaje: 92,
+            fechaEntrega: '2024-01-18',
+            comentarios: 'Excelente trabajo. Muy bien estructurado y completo.',
+            tarea: {
+              id: 1,
+              titulo: 'Ejercicio de Variables y Tipos de Datos',
+              puntajeMaximo: 100
+            },
+            curso: {
+              id: 1,
+              titulo: 'Introducción a la Programación'
+            },
+            profesor: {
+              nombre: 'Juan Pérez'
+            }
+          },
+          {
+            id: 3,
+            puntaje: 85,
+            fechaEntrega: '2024-01-17',
+            comentarios: 'Buen trabajo. Cumple con los requisitos básicos.',
+            tarea: {
+              id: 1,
+              titulo: 'Ejercicio de Variables y Tipos de Datos',
+              puntajeMaximo: 100
+            },
+            curso: {
+              id: 1,
+              titulo: 'Introducción a la Programación'
+            },
+            profesor: {
+              nombre: 'Juan Pérez'
+            }
+          },
+          {
+            id: 4,
+            puntaje: 135,
+            fechaEntrega: '2024-03-08',
+            comentarios: 'Diseño de base de datos completado correctamente.',
+            tarea: {
+              id: 3,
+              titulo: 'Diseño de Base de Datos',
+              puntajeMaximo: 150
+            },
+            curso: {
+              id: 2,
+              titulo: 'Base de Datos'
+            },
+            profesor: {
+              nombre: 'María García'
+            }
+          }
+      ]
+    }
     
-    // Datos de ejemplo para demo
+    // Aplicar filtros
+    let calificacionesFiltradas = calificacionesData
+    
+    if (filtroCurso.value) {
+      calificacionesFiltradas = calificacionesFiltradas.filter(cal => 
+        cal.curso && cal.curso.id === parseInt(filtroCurso.value)
+      )
+    }
+    
+    calificaciones.value = calificacionesFiltradas
+  } catch (apiError) {
+    // Si falla la API, usar datos demo directamente
+    console.warn('Usando datos demo para calificaciones:', apiError)    
     const calificacionesDemo = [
       {
         id: 1,
         puntaje: 92,
-        fechaEntrega: '2024-01-15',
+        fechaEntrega: '2024-01-18',
         comentarios: 'Excelente trabajo. Muy bien estructurado y completo.',
         tarea: {
           id: 1,
-          titulo: 'Sitio Web Responsivo',
-          puntajeMaximo: 100
-        },
-        curso: {
-          id: 3,
-          titulo: 'Desarrollo Web'
-        },
-        profesor: {
-          nombre: 'Carlos López'
-        }
-      },
-      {
-        id: 2,
-        puntaje: 85,
-        fechaEntrega: '2024-01-20',
-        comentarios: 'Buen trabajo, pero podrías mejorar la documentación.',
-        tarea: {
-          id: 2,
-          titulo: 'Proyecto Final - Base de Datos',
-          puntajeMaximo: 200
-        },
-        curso: {
-          id: 2,
-          titulo: 'Base de Datos'
-        },
-        profesor: {
-          nombre: 'María García'
-        }
-      },
-      {
-        id: 3,
-        puntaje: 78,
-        fechaEntrega: '2024-01-10',
-        comentarios: 'Cumple con los requisitos básicos.',
-        tarea: {
-          id: 3,
-          titulo: 'Ejercicio de Variables',
+          titulo: 'Ejercicio de Variables y Tipos de Datos',
           puntajeMaximo: 100
         },
         curso: {
@@ -308,25 +347,24 @@ const cargarCalificaciones = async () => {
       },
       {
         id: 4,
-        puntaje: 95,
-        fechaEntrega: '2024-01-25',
-        comentarios: 'Implementación muy eficiente. ¡Felicitaciones!',
+        puntaje: 135,
+        fechaEntrega: '2024-03-08',
+        comentarios: 'Diseño de base de datos completado correctamente.',
         tarea: {
-          id: 4,
-          titulo: 'Implementación de Algoritmos',
-          puntajeMaximo: 180
+          id: 3,
+          titulo: 'Diseño de Base de Datos',
+          puntajeMaximo: 150
         },
         curso: {
-          id: 4,
-          titulo: 'Algoritmos y Estructuras de Datos'
+          id: 2,
+          titulo: 'Base de Datos'
         },
         profesor: {
-          nombre: 'Ana Martínez'
+          nombre: 'María García'
         }
       }
     ]
     
-    // Aplicar filtros
     let calificacionesFiltradas = calificacionesDemo
     
     if (filtroCurso.value) {
@@ -336,8 +374,6 @@ const cargarCalificaciones = async () => {
     }
     
     calificaciones.value = calificacionesFiltradas
-  } catch (error) {
-    console.error('Error cargando calificaciones:', error)
   } finally {
     loading.value = false
   }
@@ -357,4 +393,3 @@ onMounted(() => {
   background-color: #e9ecef;
 }
 </style>
-

@@ -115,27 +115,63 @@ let clases = [
 let tareas = [
   {
     id: 1,
-    titulo: 'Ejercicio de Variables',
-    descripcion: 'Crear un programa que use diferentes tipos de variables',
-    fechaLimite: new Date('2024-01-20'),
+    titulo: 'Ejercicio de Variables y Tipos de Datos',
+    descripcion: 'Crear un programa que demuestre el uso de diferentes tipos de variables en JavaScript. Incluye ejemplos de variables numéricas, strings, booleanos, arrays y objetos.',
+    fechaLimite: new Date('2024-02-20'),
     puntaje: 100,
     cursoId: 1,
     claseId: 1,
     activa: true,
-    createdAt: new Date(),
-    updatedAt: new Date()
+    createdAt: new Date('2024-01-15'),
+    updatedAt: new Date('2024-01-15')
   },
   {
     id: 2,
-    titulo: 'Proyecto Final',
-    descripcion: 'Aplicación completa usando todo lo aprendido',
+    titulo: 'Proyecto Final - Sistema de Gestión',
+    descripcion: 'Diseñar e implementar una base de datos completa para un sistema de gestión de biblioteca con operaciones CRUD',
     fechaLimite: new Date('2024-02-15'),
     puntaje: 200,
     cursoId: 1,
     claseId: null,
     activa: true,
-    createdAt: new Date(),
-    updatedAt: new Date()
+    createdAt: new Date('2024-01-10'),
+    updatedAt: new Date('2024-01-10')
+  },
+  {
+    id: 3,
+    titulo: 'Diseño de Base de Datos',
+    descripcion: 'Diseñar el esquema de base de datos para un sistema de biblioteca incluyendo diagrama ER y normalización',
+    fechaLimite: new Date('2024-03-10'),
+    puntaje: 150,
+    cursoId: 2,
+    claseId: null,
+    activa: true,
+    createdAt: new Date('2024-02-01'),
+    updatedAt: new Date('2024-02-01')
+  },
+  {
+    id: 4,
+    titulo: 'Consultas SQL Avanzadas',
+    descripcion: 'Realizar consultas complejas usando JOIN, subconsultas, funciones agregadas y vistas',
+    fechaLimite: new Date('2024-03-25'),
+    puntaje: 120,
+    cursoId: 2,
+    claseId: null,
+    activa: true,
+    createdAt: new Date('2024-02-15'),
+    updatedAt: new Date('2024-02-15')
+  },
+  {
+    id: 5,
+    titulo: 'Sitio Web Responsivo con Bootstrap',
+    descripcion: 'Crear un sitio web profesional que se adapte a diferentes dispositivos usando Bootstrap 5',
+    fechaLimite: new Date('2024-01-30'),
+    puntaje: 150,
+    cursoId: 3,
+    claseId: null,
+    activa: true,
+    createdAt: new Date('2024-01-05'),
+    updatedAt: new Date('2024-01-05')
   }
 ];
 
@@ -167,8 +203,52 @@ let entregas = [
     estado: 'CALIFICADA',
     tareaId: 1,
     estudianteId: 3,
-    createdAt: new Date(),
-    updatedAt: new Date()
+    createdAt: new Date('2024-01-18'),
+    updatedAt: new Date('2024-01-19')
+  },
+  {
+    id: 2,
+    archivoUrl: 'uploads/entrega2.pdf',
+    comentario: 'Entrega del proyecto final',
+    calificacion: null,
+    estado: 'ENTREGADA',
+    tareaId: 2,
+    estudianteId: 3,
+    createdAt: new Date('2024-02-10'),
+    updatedAt: new Date('2024-02-10')
+  },
+  {
+    id: 3,
+    archivoUrl: 'uploads/entrega3.docx',
+    comentario: 'Ejercicio de variables completado',
+    calificacion: 85,
+    estado: 'CALIFICADA',
+    tareaId: 1,
+    estudianteId: 3,
+    createdAt: new Date('2024-01-17'),
+    updatedAt: new Date('2024-01-18')
+  },
+  {
+    id: 4,
+    archivoUrl: 'uploads/entrega_bd_1.pdf',
+    comentario: 'Diseño de base de datos completado',
+    calificacion: 135,
+    estado: 'CALIFICADA',
+    tareaId: 3,
+    estudianteId: 3,
+    createdAt: new Date('2024-03-08'),
+    updatedAt: new Date('2024-03-09')
+  },
+  {
+    id: 5,
+    archivoUrl: 'uploads/entrega_sql_1.sql',
+    comentario: 'Consultas SQL realizadas',
+    calificacion: null,
+    estado: 'ENTREGADA',
+    tareaId: 4,
+    estudianteId: 3,
+    createdAt: new Date('2024-03-20'),
+    updatedAt: new Date('2024-03-20')
   }
 ];
 
@@ -213,9 +293,9 @@ let contadores = {
   usuarios: 4,
   cursos: 4,
   clases: 3,
-  tareas: 3,
+  tareas: 6,
   matriculas: 3,
-  entregas: 2,
+  entregas: 6,
   materiales: 2,
   mensajes: 3,
   tokensRevocados: 1
@@ -674,10 +754,25 @@ app.get('/api/v1/tareas/:id', authenticateToken, (req, res) => {
     };
   });
 
+  // Determinar estado de la tarea para el estudiante actual
+  let estado = 'PENDIENTE';
+  let miEntrega = null;
+  
+  if (req.user.rol === 'ESTUDIANTE') {
+    miEntrega = entregas.find(e => e.tareaId === tarea.id && e.estudianteId === req.user.id);
+    if (miEntrega) {
+      estado = miEntrega.estado;
+    }
+  }
+
   res.json({
     ...tarea,
+    estado: estado,
     curso: curso ? { id: curso.id, titulo: curso.titulo } : null,
-    entregas: entregasTarea
+    entregas: entregasTarea,
+    _count: {
+      entregas: entregasTarea.length
+    }
   });
 });
 
@@ -775,77 +870,96 @@ app.patch('/api/v1/entregas/:id', authenticateToken, (req, res) => {
 
 // Obtener todas las entregas de un curso específico (para docentes)
 app.get('/api/v1/cursos/:cursoId/entregas', authenticateToken, (req, res) => {
-  const cursoId = parseInt(req.params.cursoId);
-  
-  // Verificar que el curso existe
-  const curso = cursos.find(c => c.id === cursoId);
-  if (!curso) {
-    return res.status(404).json({ message: 'Curso no encontrado' });
-  }
-  
-  // Verificar permisos: solo docentes y admins pueden ver entregas de cursos
-  // Si es docente, verificar que es el creador del curso o tiene acceso
-  if (req.user.rol === 'ESTUDIANTE') {
-    return res.status(403).json({ message: 'No tienes permisos para ver entregas de este curso' });
-  }
-  
-  // Obtener todas las tareas del curso
-  const tareasDelCurso = tareas.filter(t => t.cursoId === cursoId);
-  const tareasIds = tareasDelCurso.map(t => t.id);
-  
-  // Obtener todas las entregas de esas tareas
-  const entregasDelCurso = entregas
-    .filter(e => tareasIds.includes(e.tareaId))
-    .map(entrega => {
-      const tarea = tareas.find(t => t.id === entrega.tareaId);
-      const estudiante = usuarios.find(u => u.id === entrega.estudianteId);
-      
+  try {
+    const cursoId = parseInt(req.params.cursoId);
+    
+    // Verificar que el cursoId sea válido
+    if (isNaN(cursoId)) {
+      return res.status(400).json({ message: 'ID de curso inválido' });
+    }
+    
+    // Verificar que el curso existe
+    const curso = cursos.find(c => c.id === cursoId);
+    if (!curso) {
+      return res.status(404).json({ message: 'Curso no encontrado' });
+    }
+    
+    // Verificar permisos: solo docentes y admins pueden ver entregas de cursos
+    // Si es docente, verificar que es el creador del curso o tiene acceso
+    if (req.user.rol === 'ESTUDIANTE') {
+      return res.status(403).json({ message: 'No tienes permisos para ver entregas de este curso' });
+    }
+    
+    // Si es docente y no es admin, verificar que es el creador del curso
+    if (req.user.rol === 'DOCENTE' && curso.creadorId !== req.user.id) {
+      return res.status(403).json({ message: 'No tienes permisos para ver entregas de este curso' });
+    }
+    
+    // Obtener todas las tareas del curso
+    const tareasDelCurso = tareas.filter(t => t.cursoId === cursoId && t.activa);
+    const tareasIds = tareasDelCurso.map(t => t.id);
+    
+    // Obtener todas las entregas de esas tareas
+    const entregasDelCurso = entregas
+      .filter(e => tareasIds.includes(e.tareaId))
+      .map(entrega => {
+        const tarea = tareas.find(t => t.id === entrega.tareaId);
+        const estudiante = usuarios.find(u => u.id === entrega.estudianteId);
+        
+        return {
+          ...entrega,
+          tarea: tarea ? {
+            id: tarea.id,
+            titulo: tarea.titulo,
+            fechaLimite: tarea.fechaLimite,
+            puntaje: tarea.puntaje,
+            cursoId: tarea.cursoId
+          } : null,
+          estudiante: estudiante ? {
+            id: estudiante.id,
+            nombre: estudiante.nombre,
+            apellido: estudiante.apellido,
+            email: estudiante.email
+          } : null
+        };
+      });
+    
+    // Agrupar por tarea para facilitar la visualización
+    const entregasAgrupadas = tareasDelCurso.map(tarea => {
+      const entregasTarea = entregasDelCurso.filter(e => e.tareaId === tarea.id);
       return {
-        ...entrega,
-        tarea: tarea ? {
+        tarea: {
           id: tarea.id,
           titulo: tarea.titulo,
+          descripcion: tarea.descripcion || null,
           fechaLimite: tarea.fechaLimite,
           puntaje: tarea.puntaje,
           cursoId: tarea.cursoId
-        } : null,
-        estudiante: estudiante ? {
-          id: estudiante.id,
-          nombre: estudiante.nombre,
-          apellido: estudiante.apellido,
-          email: estudiante.email
-        } : null
+        },
+        entregas: entregasTarea || [],
+        totalEntregas: entregasTarea.length,
+        entregasCalificadas: entregasTarea.filter(e => e.estado === 'CALIFICADA').length,
+        entregasPendientes: entregasTarea.filter(e => e.estado === 'ENTREGADA').length
       };
     });
-  
-  // Agrupar por tarea para facilitar la visualización
-  const entregasAgrupadas = tareasDelCurso.map(tarea => {
-    const entregasTarea = entregasDelCurso.filter(e => e.tareaId === tarea.id);
-    return {
-      tarea: {
-        id: tarea.id,
-        titulo: tarea.titulo,
-        descripcion: tarea.descripcion,
-        fechaLimite: tarea.fechaLimite,
-        puntaje: tarea.puntaje,
-        cursoId: tarea.cursoId
+    
+    // Asegurar que siempre devolvemos un array, incluso si está vacío
+    res.json({
+      curso: {
+        id: curso.id,
+        titulo: curso.titulo,
+        codigo: curso.codigo
       },
-      entregas: entregasTarea,
-      totalEntregas: entregasTarea.length,
-      entregasCalificadas: entregasTarea.filter(e => e.estado === 'CALIFICADA').length,
-      entregasPendientes: entregasTarea.filter(e => e.estado === 'ENTREGADA').length
-    };
-  });
-  
-  res.json({
-    curso: {
-      id: curso.id,
-      titulo: curso.titulo,
-      codigo: curso.codigo
-    },
-    entregas: entregasAgrupadas,
-    total: entregasDelCurso.length
-  });
+      entregas: entregasAgrupadas || [],
+      total: entregasDelCurso.length || 0
+    });
+  } catch (error) {
+    console.error('Error en endpoint de entregas:', error);
+    res.status(500).json({ 
+      message: 'Error interno del servidor al cargar entregas',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
 });
 
 // ==================== RUTAS DE MATRÍCULAS ====================
@@ -1239,6 +1353,7 @@ app.get('/api/v1/calificaciones/mis-calificaciones', authenticateToken, requireR
   const calificaciones = misEntregas.map(entrega => {
     const tarea = tareas.find(t => t.id === entrega.tareaId);
     const curso = tarea ? cursos.find(c => c.id === tarea.cursoId) : null;
+    const creadorCurso = curso ? usuarios.find(u => u.id === curso.creadorId) : null;
     
     return {
       id: entrega.id,
@@ -1254,8 +1369,10 @@ app.get('/api/v1/calificaciones/mis-calificaciones', authenticateToken, requireR
         id: curso.id,
         titulo: curso.titulo
       } : null,
-      profesor: {
-        nombre: 'Profesor' // En producción, esto vendría del curso
+      profesor: creadorCurso ? {
+        nombre: `${creadorCurso.nombre} ${creadorCurso.apellido}`
+      } : {
+        nombre: 'Docente'
       }
     };
   });

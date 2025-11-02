@@ -1,5 +1,8 @@
 import axios from 'axios'
 
+// ✅ Detectar modo demo desde auth store
+const DEMO_MODE = true // Debe coincidir con auth.js
+
 // Configurar axios
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api/v1',
@@ -9,9 +12,15 @@ const api = axios.create({
 
 // Interceptor para agregar token
 api.interceptors.request.use(config => {
-  const token = localStorage.getItem('access_token')
-  if (token) {
+  if (DEMO_MODE) {
+    // En modo demo, usar token demo
+    const token = localStorage.getItem('demo_token') || 'demo-token'
     config.headers.Authorization = `Bearer ${token}`
+  } else {
+    const token = localStorage.getItem('access_token')
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
   }
   return config
 })
@@ -20,7 +29,8 @@ api.interceptors.request.use(config => {
 api.interceptors.response.use(
   response => response,
   async error => {
-    if (error.response?.status === 401) {
+    // ✅ NO redirigir en modo demo - las vistas manejan los errores con datos demo
+    if (!DEMO_MODE && error.response?.status === 401) {
       // Limpiar token y redirigir al login
       localStorage.removeItem('access_token')
       window.location.href = '/login'

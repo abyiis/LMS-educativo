@@ -32,6 +32,11 @@
                 <i class="bi bi-clipboard-check-fill me-1"></i> Tareas
               </router-link>
             </li>
+            <li v-if="authStore.isDocente || authStore.isAdmin" class="nav-item animate-slide-in" style="animation-delay: 0.35s;">
+              <router-link to="/entregas" class="nav-link" active-class="active">
+                <i class="bi bi-file-earmark-check-fill me-1"></i> Entregas
+              </router-link>
+            </li>
             <li v-if="!authStore.isDocente && !authStore.isAdmin" class="nav-item animate-slide-in" style="animation-delay: 0.4s;">
               <router-link to="/calificaciones" class="nav-link" active-class="active">
                 <i class="bi bi-star-fill me-1"></i> Calificaciones
@@ -146,6 +151,9 @@
           </router-link>
           <router-link v-if="!authStore.isAdmin" to="/tareas" class="btn btn-outline-primary text-start" data-bs-dismiss="offcanvas">
             <i class="bi bi-clipboard-check-fill me-2"></i> Tareas
+          </router-link>
+          <router-link v-if="authStore.isDocente || authStore.isAdmin" to="/entregas" class="btn btn-outline-primary text-start" data-bs-dismiss="offcanvas">
+            <i class="bi bi-file-earmark-check-fill me-2"></i> Entregas
           </router-link>
           <router-link v-if="!authStore.isDocente && !authStore.isAdmin" to="/calificaciones" class="btn btn-outline-primary text-start" data-bs-dismiss="offcanvas">
             <i class="bi bi-star-fill me-2"></i> Calificaciones

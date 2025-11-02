@@ -5,7 +5,6 @@ const routes = [
   {
     path: '/',
     redirect: (to) => {
-      // Los admins van a /admin, los docentes a /tareas, otros a /dashboard
       if (authStore.isAdmin) return '/admin'
       if (authStore.isDocente) return '/tareas'
       return '/dashboard'
@@ -27,7 +26,7 @@ const routes = [
     path: '/dashboard',
     name: 'Dashboard',
     component: () => import('../views/DashboardView.vue'),
-    meta: { requiresAuth: true, excludeRole: ['ADMIN', 'DOCENTE'] }
+    meta: { requiresAuth: true }
   },
   {
     path: '/cursos',
@@ -72,6 +71,12 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/entregas',
+    name: 'Entregas',
+    component: () => import('../views/EntregasView.vue'),
+    meta: { requiresAuth: true, requiresRole: ['DOCENTE', 'ADMIN'] }
+  },
+  {
     path: '/calificaciones',
     name: 'Calificaciones',
     component: () => import('../views/CalificacionesView.vue'),
@@ -81,19 +86,19 @@ const routes = [
     path: '/certificados',
     name: 'Certificados',
     component: () => import('../views/CertificadosView.vue'),
-    meta: { requiresAuth: true, excludeRole: 'ADMIN' }
+    meta: { requiresAuth: true, requiresRole: ['ESTUDIANTE', 'DOCENTE'] }
   },
   {
     path: '/calendario',
     name: 'Calendario',
     component: () => import('../views/CalendarioView.vue'),
-    meta: { requiresAuth: true, excludeRole: 'ADMIN' }
+    meta: { requiresAuth: true, requiresRole: ['ESTUDIANTE', 'DOCENTE'] }
   },
   {
     path: '/progreso',
     name: 'Progreso',
     component: () => import('../views/ProgresoView.vue'),
-    meta: { requiresAuth: true, excludeRole: 'ADMIN' }
+    meta: { requiresAuth: true, requiresRole: ['ESTUDIANTE', 'DOCENTE'] }
   },
   {
     path: '/profile',
@@ -125,57 +130,71 @@ const router = createRouter({
   routes
 })
 
-// Guard de navegación
+// Variable para evitar loops infinitos
+let isCheckingAuth = false
+
+// Guard de navegación mejorado
 router.beforeEach(async (to, from, next) => {
-  // Si es la ruta raíz, redirigir según rol
+  // Evitar loops infinitos
+  if (isCheckingAuth) {
+    next()
+    return
+  }
+
+  // ✅ PASO 1: Verificar autenticación PRIMERO si la ruta lo requiere
+  if (to.meta.requiresAuth) {
+    if (!authStore.isAuthenticated) {
+      isCheckingAuth = true
+      const isAuth = await authStore.checkAuth()
+      isCheckingAuth = false
+      
+      if (!isAuth) {
+        next('/login')
+        return
+      }
+    }
+  }
+
+  // ✅ PASO 2: Manejar ruta raíz
   if (to.path === '/' || to.path === '') {
-    if (authStore.isAuthenticated || await authStore.checkAuth()) {
-      const redirectTo = authStore.isAdmin ? '/admin' : (authStore.isDocente ? '/tareas' : '/dashboard')
-      next(redirectTo)
-      return
+    if (!authStore.isAuthenticated) {
+      isCheckingAuth = true
+      const isAuth = await authStore.checkAuth()
+      isCheckingAuth = false
+      
+      if (!isAuth) {
+        next('/login')
+        return
+      }
     }
-    next('/login')
+    
+    const redirectTo = authStore.isAdmin ? '/admin' : (authStore.isDocente ? '/tareas' : '/dashboard')
+    next(redirectTo)
     return
   }
-  
-  // Verificar autenticación
-  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    const isAuth = await authStore.checkAuth()
-    if (!isAuth) {
-      next('/login')
-      return
-    }
-  }
 
-  // Redirigir usuarios autenticados
+  // ✅ PASO 3: Redirigir usuarios autenticados de páginas de invitado
   if (to.meta.requiresGuest && authStore.isAuthenticated) {
-    // Admin va a /admin, docentes a /tareas, otros a /dashboard
     const redirectTo = authStore.isAdmin ? '/admin' : (authStore.isDocente ? '/tareas' : '/dashboard')
     next(redirectTo)
     return
   }
 
-  // Verificar roles
-  if (to.meta.requiresRole && authStore.user?.rol !== to.meta.requiresRole) {
-    // Admin va a /admin, docentes a /tareas, otros a /dashboard
-    const redirectTo = authStore.isAdmin ? '/admin' : (authStore.isDocente ? '/tareas' : '/dashboard')
-    next(redirectTo)
-    return
-  }
-
-  // Verificar exclusión de roles
-  if (to.meta.excludeRole) {
-    const excludedRoles = Array.isArray(to.meta.excludeRole) 
-      ? to.meta.excludeRole 
-      : [to.meta.excludeRole]
-    if (excludedRoles.includes(authStore.user?.rol)) {
-      // Admin va a /admin, docentes a /tareas, otros a /dashboard
+  // ✅ PASO 4: Verificar roles requeridos (solo SI ya está autenticado)
+  if (to.meta.requiresRole && authStore.isAuthenticated) {
+    const requiredRoles = Array.isArray(to.meta.requiresRole) 
+      ? to.meta.requiresRole 
+      : [to.meta.requiresRole]
+    
+    if (!requiredRoles.includes(authStore.user?.rol)) {
+      console.warn(`Acceso denegado a ${to.path}. Rol requerido: ${requiredRoles}, Rol usuario: ${authStore.user?.rol}`)
       const redirectTo = authStore.isAdmin ? '/admin' : (authStore.isDocente ? '/tareas' : '/dashboard')
       next(redirectTo)
       return
     }
   }
 
+  // ✅ Todo OK, permitir navegación
   next()
 })
 
