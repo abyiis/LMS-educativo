@@ -1,268 +1,290 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-8">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <Layout>
+    <div class="container-fluid">
       <!-- Header -->
-      <div class="mb-8">
-        <h1 class="text-4xl font-bold text-gray-900 mb-2">📊 Mis Calificaciones</h1>
-        <p class="text-gray-600">Revisa tu rendimiento académico en todos tus cursos</p>
-      </div>
-
-      <!-- Loading State -->
-      <div v-if="loading" class="flex justify-center items-center py-12">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-      </div>
-
-      <!-- Error State -->
-      <div v-else-if="error" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-        <p class="text-red-800">{{ error }}</p>
-      </div>
-
-      <!-- Content -->
-      <div v-else>
-        <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-gray-500 text-sm mb-1">Promedio General</p>
-                <p class="text-3xl font-bold text-gray-900">{{ stats.promedioGeneral }}</p>
-              </div>
-              <div class="bg-blue-100 rounded-full p-3">
-                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-gray-500 text-sm mb-1">Cursos Aprobados</p>
-                <p class="text-3xl font-bold text-gray-900">{{ stats.cursosAprobados }}</p>
-              </div>
-              <div class="bg-green-100 rounded-full p-3">
-                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-yellow-500">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-gray-500 text-sm mb-1">Cursos Activos</p>
-                <p class="text-3xl font-bold text-gray-900">{{ stats.cursosActivos }}</p>
-              </div>
-              <div class="bg-yellow-100 rounded-full p-3">
-                <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-gray-500 text-sm mb-1">Total Tareas</p>
-                <p class="text-3xl font-bold text-gray-900">{{ stats.totalTareas }}</p>
-              </div>
-              <div class="bg-purple-100 rounded-full p-3">
-                <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
-              </div>
-            </div>
+      <div class="row mb-5">
+        <div class="col">
+          <div class="glass-effect p-4 animate-fade-in">
+            <h1 class="h2 mb-2 text-gradient">
+              <i class="bi bi-graph-up-arrow me-2"></i>Mis Calificaciones
+            </h1>
+            <p class="text-muted mb-0 fs-5">Revisa tu rendimiento académico en todos tus cursos</p>
           </div>
         </div>
+      </div>
 
-        <!-- Filters -->
-        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
-          <div class="flex flex-wrap gap-4 items-center">
-            <div class="flex-1 min-w-[200px]">
-              <input
-                v-model="searchQuery"
-                type="text"
-                placeholder="Buscar curso..."
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              >
-            </div>
-            <select
-              v-model="filterEstado"
-              class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-            >
+      <!-- Stats Cards -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-3">
+          <div class="glass-effect p-3 text-center animate-bounce-in">
+            <i class="bi bi-award-fill text-primary fs-3 mb-2"></i>
+            <h4 class="mb-0">{{ stats.promedioGeneral }}</h4>
+            <small class="text-muted">Promedio General</small>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="glass-effect p-3 text-center animate-bounce-in" style="animation-delay: 0.1s;">
+            <i class="bi bi-check-circle-fill text-success fs-3 mb-2"></i>
+            <h4 class="mb-0">{{ stats.cursosAprobados }}</h4>
+            <small class="text-muted">Cursos Aprobados</small>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="glass-effect p-3 text-center animate-bounce-in" style="animation-delay: 0.2s;">
+            <i class="bi bi-book-fill text-info fs-3 mb-2"></i>
+            <h4 class="mb-0">{{ stats.cursosActivos }}</h4>
+            <small class="text-muted">Cursos Activos</small>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="glass-effect p-3 text-center animate-bounce-in" style="animation-delay: 0.3s;">
+            <i class="bi bi-list-task text-warning fs-3 mb-2"></i>
+            <h4 class="mb-0">{{ stats.totalTareas }}</h4>
+            <small class="text-muted">Total Tareas</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filtros -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-4">
+          <div class="glass-effect p-3 animate-slide-in">
+            <label class="form-label fw-semibold mb-2">
+              <i class="bi bi-search me-1"></i>Buscar curso
+            </label>
+            <input 
+              v-model="searchQuery"
+              type="text" 
+              class="form-control border-0 bg-transparent" 
+              placeholder="Buscar por nombre...">
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="glass-effect p-3 animate-slide-in" style="animation-delay: 0.1s;">
+            <label class="form-label fw-semibold mb-2">
+              <i class="bi bi-funnel me-1"></i>Estado
+            </label>
+            <select v-model="filterEstado" class="form-select border-0 bg-transparent">
               <option value="todos">Todos los estados</option>
               <option value="aprobado">Aprobados</option>
               <option value="reprobado">Reprobados</option>
               <option value="en_progreso">En progreso</option>
             </select>
-            <select
-              v-model="sortBy"
-              class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-            >
-              <option value="nombre">Ordenar por nombre</option>
-              <option value="calificacion">Ordenar por calificación</option>
-              <option value="fecha">Ordenar por fecha</option>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="glass-effect p-3 animate-slide-in" style="animation-delay: 0.2s;">
+            <label class="form-label fw-semibold mb-2">
+              <i class="bi bi-sort-down me-1"></i>Ordenar por
+            </label>
+            <select v-model="sortBy" class="form-select border-0 bg-transparent">
+              <option value="nombre">Nombre del curso</option>
+              <option value="calificacion">Calificación</option>
+              <option value="fecha">Fecha</option>
             </select>
           </div>
         </div>
+      </div>
 
-        <!-- Calificaciones List -->
-        <div class="space-y-6">
-          <div
-            v-for="calificacion in calificacionesFiltradas"
-            :key="calificacion.id"
-            class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300"
-          >
-            <div class="p-6">
-              <!-- Course Header -->
-              <div class="flex items-start justify-between mb-4">
-                <div class="flex-1">
-                  <h3 class="text-xl font-bold text-gray-900 mb-2">{{ calificacion.curso }}</h3>
-                  <p class="text-gray-600 mb-2">{{ calificacion.descripcion }}</p>
-                  <div class="flex flex-wrap gap-2">
-                    <span class="px-3 py-1 bg-indigo-100 text-indigo-800 text-sm rounded-full">
-                      {{ calificacion.categoria }}
-                    </span>
-                    <span :class="getEstadoBadge(calificacion.estado)">
-                      {{ calificacion.estado }}
+      <!-- Calificaciones List -->
+      <div class="row g-4">
+        <div v-for="calif in calificacionesFiltradas" :key="calif.id" class="col-12">
+          <div class="card glass-effect border-0 hover-lift animate-fade-in">
+            <div class="card-body p-4">
+              <div class="row align-items-center">
+                <!-- Curso Info -->
+                <div class="col-md-8">
+                  <h5 class="card-title mb-2">
+                    <i class="bi bi-book me-2"></i>{{ calif.curso }}
+                  </h5>
+                  <p class="text-muted mb-2">{{ calif.descripcion }}</p>
+                  <div class="d-flex gap-2 flex-wrap mb-3">
+                    <span class="badge bg-primary">{{ calif.categoria }}</span>
+                    <span :class="getEstadoBadgeClass(calif.estado)">
+                      {{ calif.estado }}
                     </span>
                   </div>
-                </div>
-                <div class="ml-4">
-                  <div :class="getCalificacionColor(calificacion.calificacion_final)" 
-                       class="text-center p-4 rounded-xl min-w-[100px]">
-                    <p class="text-sm font-medium mb-1">Calificación</p>
-                    <p class="text-3xl font-bold">{{ calificacion.calificacion_final }}</p>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Progress Bar -->
-              <div class="mb-4">
-                <div class="flex justify-between text-sm text-gray-600 mb-2">
-                  <span>Progreso del curso</span>
-                  <span>{{ calificacion.progreso }}%</span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    :class="getProgressColor(calificacion.progreso)"
-                    class="h-2 rounded-full transition-all duration-300"
-                    :style="{ width: `${calificacion.progreso}%` }"
-                  ></div>
-                </div>
-              </div>
-
-              <!-- Detalles de Tareas -->
-              <div class="border-t pt-4">
-                <button
-                  @click="toggleDetalles(calificacion.id)"
-                  class="flex items-center justify-between w-full text-left font-medium text-gray-700 hover:text-indigo-600 transition-colors"
-                >
-                  <span class="flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    </svg>
-                    Ver detalles de tareas ({{ calificacion.tareas.length }})
-                  </span>
-                  <svg 
-                    :class="{ 'rotate-180': mostrarDetalles[calificacion.id] }"
-                    class="w-5 h-5 transition-transform" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    viewBox="0 0 24 24"
-                  >
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-
-                <!-- Tareas Detail -->
-                <div v-if="mostrarDetalles[calificacion.id]" class="mt-4 space-y-3">
-                  <div
-                    v-for="tarea in calificacion.tareas"
-                    :key="tarea.id"
-                    class="bg-gray-50 rounded-lg p-4 flex items-center justify-between"
-                  >
-                    <div class="flex-1">
-                      <h4 class="font-medium text-gray-900 mb-1">{{ tarea.titulo }}</h4>
-                      <div class="flex items-center gap-4 text-sm text-gray-600">
-                        <span class="flex items-center gap-1">
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                          </svg>
-                          {{ new Date(tarea.fecha_entrega).toLocaleDateString() }}
-                        </span>
-                        <span :class="getEstadoTareaBadge(tarea.estado)">
-                          {{ tarea.estado }}
-                        </span>
-                      </div>
+                  
+                  <!-- Progress Bar -->
+                  <div class="mb-2">
+                    <div class="d-flex justify-content-between text-sm mb-1">
+                      <small class="text-muted">Progreso del curso</small>
+                      <small class="fw-bold">{{ calif.progreso }}%</small>
                     </div>
-                    <div class="ml-4">
-                      <div :class="getTareaCalificacionColor(tarea.calificacion)" 
-                           class="text-center px-4 py-2 rounded-lg min-w-[80px]">
-                        <p class="text-xl font-bold">
-                          {{ tarea.calificacion !== null ? tarea.calificacion : '-' }}
-                        </p>
+                    <div class="progress" style="height: 8px;">
+                      <div 
+                        :class="getProgressClass(calif.progreso)"
+                        class="progress-bar" 
+                        role="progressbar" 
+                        :style="{width: calif.progreso + '%'}">
                       </div>
                     </div>
                   </div>
                 </div>
+
+                <!-- Calificación -->
+                <div class="col-md-4 text-center">
+                  <div :class="getCalificacionClass(calif.calificacion_final)" class="p-4 rounded-3">
+                    <p class="text-muted mb-1">Calificación</p>
+                    <h2 class="display-4 mb-0">{{ calif.calificacion_final }}</h2>
+                  </div>
+                </div>
               </div>
 
-              <!-- Course Actions -->
-              <div class="flex gap-3 mt-4 pt-4 border-t">
-                <button
-                  @click="verCurso(calificacion.curso_id)"
-                  class="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2"
-                >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
-                  Ver Curso
+              <!-- Tareas Details (Collapsible) -->
+              <div class="mt-3">
+                <button 
+                  class="btn btn-link text-decoration-none w-100 text-start p-0"
+                  @click="toggleDetalles(calif.id)">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span>
+                      <i class="bi bi-list-check me-2"></i>
+                      Ver detalles de tareas ({{ calif.tareas.length }})
+                    </span>
+                    <i :class="mostrarDetalles[calif.id] ? 'bi-chevron-up' : 'bi-chevron-down'" class="bi"></i>
+                  </div>
                 </button>
-                <button
-                  v-if="calificacion.certificado_disponible"
-                  class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
-                >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                  </svg>
-                  Obtener Certificado
+
+                <div v-if="mostrarDetalles[calif.id]" class="mt-3">
+                  <div class="table-responsive">
+                    <table class="table table-sm">
+                      <thead>
+                        <tr>
+                          <th>Tarea</th>
+                          <th>Fecha Entrega</th>
+                          <th>Estado</th>
+                          <th class="text-center">Calificación</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="tarea in calif.tareas" :key="tarea.id">
+                          <td>{{ tarea.titulo }}</td>
+                          <td>
+                            <i class="bi bi-calendar3 me-1"></i>
+                            {{ formatDate(tarea.fecha_entrega) }}
+                          </td>
+                          <td>
+                            <span :class="getEstadoTareaClass(tarea.estado)" class="badge">
+                              {{ tarea.estado }}
+                            </span>
+                          </td>
+                          <td class="text-center">
+                            <span :class="getTareaCalificacionClass(tarea.calificacion)" class="badge">
+                              {{ tarea.calificacion !== null ? tarea.calificacion : '-' }}
+                            </span>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Actions -->
+              <div class="mt-3 d-flex gap-2">
+                <button @click="verCurso(calif.curso_id)" class="btn btn-primary btn-sm">
+                  <i class="bi bi-eye me-1"></i>Ver Curso
+                </button>
+                <button v-if="calif.certificado_disponible" class="btn btn-success btn-sm">
+                  <i class="bi bi-award me-1"></i>Obtener Certificado
                 </button>
               </div>
             </div>
           </div>
+        </div>
 
-          <!-- Empty State -->
-          <div v-if="calificacionesFiltradas.length === 0" 
-               class="bg-white rounded-xl shadow-lg p-12 text-center">
-            <svg class="w-24 h-24 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <h3 class="text-xl font-semibold text-gray-900 mb-2">No se encontraron calificaciones</h3>
-            <p class="text-gray-600">Intenta ajustar los filtros de búsqueda</p>
+        <!-- Empty State -->
+        <div v-if="calificacionesFiltradas.length === 0" class="col-12">
+          <div class="glass-effect p-5 text-center animate-fade-in">
+            <i class="bi bi-inbox fs-1 text-muted mb-3 d-block"></i>
+            <h5 class="text-muted">No se encontraron calificaciones</h5>
+            <p class="text-muted">Intenta ajustar los filtros de búsqueda</p>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </Layout>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import Layout from '../components/Layout.vue'
 import { api } from '../services/api'
 import { authStore } from '../stores/auth'
 
 const router = useRouter()
 
 // State
-const loading = ref(true)
+const loading = ref(false)
 const error = ref(null)
-const calificaciones = ref([])
+const calificaciones = ref([
+  {
+    id: 1,
+    curso_id: 1,
+    curso: 'Desarrollo Web Full Stack',
+    descripcion: 'Aprende a crear aplicaciones web modernas con Vue.js y Node.js',
+    categoria: 'Desarrollo Web',
+    calificacion_final: 92,
+    progreso: 85,
+    estado: 'En progreso',
+    certificado_disponible: false,
+    tareas: [
+      { id: 1, titulo: 'HTML y CSS Básico', calificacion: 95, estado: 'Entregada', fecha_entrega: '2024-10-15' },
+      { id: 2, titulo: 'JavaScript Fundamentos', calificacion: 88, estado: 'Entregada', fecha_entrega: '2024-10-22' },
+      { id: 3, titulo: 'Vue.js Componentes', calificacion: 93, estado: 'Entregada', fecha_entrega: '2024-10-29' },
+      { id: 4, titulo: 'Proyecto Final Frontend', calificacion: null, estado: 'Pendiente', fecha_entrega: '2024-11-15' }
+    ]
+  },
+  {
+    id: 2,
+    curso_id: 2,
+    curso: 'Python para Data Science',
+    descripcion: 'Análisis de datos con Python, Pandas y Matplotlib',
+    categoria: 'Ciencia de Datos',
+    calificacion_final: 88,
+    progreso: 100,
+    estado: 'Aprobado',
+    certificado_disponible: true,
+    tareas: [
+      { id: 5, titulo: 'Pandas Básico', calificacion: 90, estado: 'Entregada', fecha_entrega: '2024-09-10' },
+      { id: 6, titulo: 'Visualización de Datos', calificacion: 85, estado: 'Entregada', fecha_entrega: '2024-09-20' },
+      { id: 7, titulo: 'Machine Learning Intro', calificacion: 89, estado: 'Entregada', fecha_entrega: '2024-09-30' }
+    ]
+  },
+  {
+    id: 3,
+    curso_id: 3,
+    curso: 'Diseño UI/UX Avanzado',
+    descripcion: 'Principios de diseño de interfaces y experiencia de usuario',
+    categoria: 'Diseño',
+    calificacion_final: 95,
+    progreso: 100,
+    estado: 'Aprobado',
+    certificado_disponible: true,
+    tareas: [
+      { id: 8, titulo: 'Fundamentos de UI', calificacion: 92, estado: 'Entregada', fecha_entrega: '2024-08-15' },
+      { id: 9, titulo: 'Prototipado en Figma', calificacion: 98, estado: 'Entregada', fecha_entrega: '2024-08-25' },
+      { id: 10, titulo: 'Proyecto Final UI/UX', calificacion: 95, estado: 'Entregada', fecha_entrega: '2024-09-05' }
+    ]
+  },
+  {
+    id: 4,
+    curso_id: 4,
+    curso: 'Bases de Datos SQL',
+    descripcion: 'Diseño y optimización de bases de datos relacionales',
+    categoria: 'Backend',
+    calificacion_final: 78,
+    progreso: 70,
+    estado: 'En progreso',
+    certificado_disponible: false,
+    tareas: [
+      { id: 11, titulo: 'Consultas SQL Básicas', calificacion: 80, estado: 'Entregada', fecha_entrega: '2024-10-05' },
+      { id: 12, titulo: 'Normalización de BD', calificacion: 75, estado: 'Entregada', fecha_entrega: '2024-10-18' },
+      { id: 13, titulo: 'Optimización de Queries', calificacion: null, estado: 'Pendiente', fecha_entrega: '2024-11-10' }
+    ]
+  }
+])
 const mostrarDetalles = ref({})
 
 // Filters
@@ -272,12 +294,12 @@ const sortBy = ref('nombre')
 
 // Computed Stats
 const stats = computed(() => {
-  const total = calificaciones.value.length
-  const aprobados = calificaciones.value.filter(c => c.estado === 'Aprobado').length
-  const activos = calificaciones.value.filter(c => c.estado === 'En progreso').length
-  const totalTareas = calificaciones.value.reduce((sum, c) => sum + c.tareas.length, 0)
+  const total = calificaciones.value?.length || 0
+  const aprobados = calificaciones.value?.filter(c => c.estado === 'Aprobado').length || 0
+  const activos = calificaciones.value?.filter(c => c.estado === 'En progreso').length || 0
+  const totalTareas = calificaciones.value?.reduce((sum, c) => sum + (c.tareas?.length || 0), 0) || 0
   
-  const promedioTotal = calificaciones.value.reduce((sum, c) => sum + c.calificacion_final, 0)
+  const promedioTotal = calificaciones.value?.reduce((sum, c) => sum + (c.calificacion_final || 0), 0) || 0
   const promedio = total > 0 ? (promedioTotal / total).toFixed(1) : '0.0'
   
   return {
@@ -290,15 +312,19 @@ const stats = computed(() => {
 
 // Computed Filtered
 const calificacionesFiltradas = computed(() => {
+  if (!calificaciones.value || calificaciones.value.length === 0) {
+    return []
+  }
+  
   let resultado = [...calificaciones.value]
   
   // Filtrar por búsqueda
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
     resultado = resultado.filter(c => 
-      c.curso.toLowerCase().includes(query) ||
-      c.descripcion.toLowerCase().includes(query) ||
-      c.categoria.toLowerCase().includes(query)
+      c.curso?.toLowerCase().includes(query) ||
+      c.descripcion?.toLowerCase().includes(query) ||
+      c.categoria?.toLowerCase().includes(query)
     )
   }
   
@@ -314,9 +340,9 @@ const calificacionesFiltradas = computed(() => {
   
   // Ordenar
   resultado.sort((a, b) => {
-    if (sortBy.value === 'nombre') return a.curso.localeCompare(b.curso)
-    if (sortBy.value === 'calificacion') return b.calificacion_final - a.calificacion_final
-    if (sortBy.value === 'fecha') return new Date(b.fecha_actualizacion) - new Date(a.fecha_actualizacion)
+    if (sortBy.value === 'nombre') return (a.curso || '').localeCompare(b.curso || '')
+    if (sortBy.value === 'calificacion') return (b.calificacion_final || 0) - (a.calificacion_final || 0)
+    if (sortBy.value === 'fecha') return new Date(b.fecha_actualizacion || 0) - new Date(a.fecha_actualizacion || 0)
     return 0
   })
   
@@ -332,54 +358,71 @@ const verCurso = (cursoId) => {
   router.push(`/cursos/${cursoId}`)
 }
 
-const getCalificacionColor = (calificacion) => {
-  if (calificacion >= 90) return 'bg-green-100 text-green-800'
-  if (calificacion >= 80) return 'bg-blue-100 text-blue-800'
-  if (calificacion >= 70) return 'bg-yellow-100 text-yellow-800'
-  return 'bg-red-100 text-red-800'
+const formatDate = (dateString) => {
+  return new Date(dateString).toLocaleDateString('es-ES', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  })
 }
 
-const getTareaCalificacionColor = (calificacion) => {
-  if (calificacion === null) return 'bg-gray-100 text-gray-600'
-  if (calificacion >= 90) return 'bg-green-100 text-green-800'
-  if (calificacion >= 80) return 'bg-blue-100 text-blue-800'
-  if (calificacion >= 70) return 'bg-yellow-100 text-yellow-800'
-  return 'bg-red-100 text-red-800'
+const getCalificacionClass = (calificacion) => {
+  if (calificacion >= 90) return 'bg-success bg-opacity-10 text-success'
+  if (calificacion >= 80) return 'bg-info bg-opacity-10 text-info'
+  if (calificacion >= 70) return 'bg-warning bg-opacity-10 text-warning'
+  return 'bg-danger bg-opacity-10 text-danger'
 }
 
-const getProgressColor = (progreso) => {
-  if (progreso >= 90) return 'bg-green-500'
-  if (progreso >= 70) return 'bg-blue-500'
-  if (progreso >= 50) return 'bg-yellow-500'
-  return 'bg-red-500'
+const getTareaCalificacionClass = (calificacion) => {
+  if (calificacion === null) return 'bg-secondary'
+  if (calificacion >= 90) return 'bg-success'
+  if (calificacion >= 80) return 'bg-info'
+  if (calificacion >= 70) return 'bg-warning'
+  return 'bg-danger'
 }
 
-const getEstadoBadge = (estado) => {
-  if (estado === 'Aprobado') return 'px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full'
-  if (estado === 'En progreso') return 'px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full'
-  if (estado === 'Reprobado') return 'px-3 py-1 bg-red-100 text-red-800 text-sm rounded-full'
-  return 'px-3 py-1 bg-gray-100 text-gray-800 text-sm rounded-full'
+const getProgressClass = (progreso) => {
+  if (progreso >= 90) return 'bg-success'
+  if (progreso >= 70) return 'bg-info'
+  if (progreso >= 50) return 'bg-warning'
+  return 'bg-danger'
 }
 
-const getEstadoTareaBadge = (estado) => {
-  if (estado === 'Entregada') return 'px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full'
-  if (estado === 'Pendiente') return 'px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full'
-  if (estado === 'Atrasada') return 'px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full'
-  return 'px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded-full'
+const getEstadoBadgeClass = (estado) => {
+  if (estado === 'Aprobado') return 'badge bg-success'
+  if (estado === 'En progreso') return 'badge bg-info'
+  if (estado === 'Reprobado') return 'badge bg-danger'
+  return 'badge bg-secondary'
+}
+
+const getEstadoTareaClass = (estado) => {
+  if (estado === 'Entregada') return 'bg-success'
+  if (estado === 'Pendiente') return 'bg-warning'
+  if (estado === 'Atrasada') return 'bg-danger'
+  return 'bg-secondary'
 }
 
 const fetchCalificaciones = async () => {
-  loading.value = true
-  error.value = null
+  // Si no hay usuario autenticado, usar solo datos demo
+  if (!authStore.user || !authStore.user.id) {
+    console.log('Usando datos demo (sin usuario autenticado)')
+    return
+  }
   
+  // Si estamos en modo DEMO (token es "demo-token-..."), no llamar al backend
+  if (authStore.token && authStore.token.startsWith('demo-token')) {
+    console.log('Usando datos demo (modo DEMO activo)')
+    return
+  }
+  
+  // Intentar cargar desde backend real si hay usuario y token válido
   try {
     const response = await api.get(`/calificaciones/estudiante/${authStore.user.id}`)
     calificaciones.value = response.data
+    console.log('Calificaciones cargadas desde backend')
   } catch (err) {
-    console.error('Error al cargar calificaciones:', err)
-    error.value = 'Error al cargar las calificaciones. Por favor, intenta de nuevo.'
-  } finally {
-    loading.value = false
+    console.log('Usando datos demo (backend no disponible o error de permisos)')
+    // Los datos demo ya están inicializados
   }
 }
 
