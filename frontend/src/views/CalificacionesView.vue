@@ -1,395 +1,389 @@
 <template>
-  <Layout>
-    <div class="container-fluid">
+  <div class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Header -->
-      <div class="glass-effect p-4 animate-fade-in">
-        <div class="d-flex justify-content-between align-items-center">
-          <h1 class="h2 mb-1">Mis Calificaciones</h1>
-          <p class="text-muted">Revisa tus calificaciones y progreso académico</p>
-        </div>
+      <div class="mb-8">
+        <h1 class="text-4xl font-bold text-gray-900 mb-2">📊 Mis Calificaciones</h1>
+        <p class="text-gray-600">Revisa tu rendimiento académico en todos tus cursos</p>
       </div>
 
-      <!-- Resumen de calificaciones -->
-      <div class="row g-3 mb-4">
-        <div class="col-md-3">
-          <div class="card h-100">
-            <div class="card-body text-center">
-              <i class="bi bi-star-fill text-warning fs-1 mb-2"></i>
-              <h4 class="mb-1">{{ promedioGeneral }}</h4>
-              <p class="text-muted mb-0">Promedio General</p>
+      <!-- Loading State -->
+      <div v-if="loading" class="flex justify-center items-center py-12">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      </div>
+
+      <!-- Error State -->
+      <div v-else-if="error" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+        <p class="text-red-800">{{ error }}</p>
+      </div>
+
+      <!-- Content -->
+      <div v-else>
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-500 text-sm mb-1">Promedio General</p>
+                <p class="text-3xl font-bold text-gray-900">{{ stats.promedioGeneral }}</p>
+              </div>
+              <div class="bg-blue-100 rounded-full p-3">
+                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-500 text-sm mb-1">Cursos Aprobados</p>
+                <p class="text-3xl font-bold text-gray-900">{{ stats.cursosAprobados }}</p>
+              </div>
+              <div class="bg-green-100 rounded-full p-3">
+                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-yellow-500">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-500 text-sm mb-1">Cursos Activos</p>
+                <p class="text-3xl font-bold text-gray-900">{{ stats.cursosActivos }}</p>
+              </div>
+              <div class="bg-yellow-100 rounded-full p-3">
+                <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-500 text-sm mb-1">Total Tareas</p>
+                <p class="text-3xl font-bold text-gray-900">{{ stats.totalTareas }}</p>
+              </div>
+              <div class="bg-purple-100 rounded-full p-3">
+                <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+              </div>
             </div>
           </div>
         </div>
-        <div class="col-md-3">
-          <div class="card h-100">
-            <div class="card-body text-center">
-              <i class="bi bi-check-circle-fill text-success fs-1 mb-2"></i>
-              <h4 class="mb-1">{{ tareasCompletadas }}</h4>
-              <p class="text-muted mb-0">Tareas Completadas</p>
+
+        <!-- Filters -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+          <div class="flex flex-wrap gap-4 items-center">
+            <div class="flex-1 min-w-[200px]">
+              <input
+                v-model="searchQuery"
+                type="text"
+                placeholder="Buscar curso..."
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              >
             </div>
+            <select
+              v-model="filterEstado"
+              class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            >
+              <option value="todos">Todos los estados</option>
+              <option value="aprobado">Aprobados</option>
+              <option value="reprobado">Reprobados</option>
+              <option value="en_progreso">En progreso</option>
+            </select>
+            <select
+              v-model="sortBy"
+              class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            >
+              <option value="nombre">Ordenar por nombre</option>
+              <option value="calificacion">Ordenar por calificación</option>
+              <option value="fecha">Ordenar por fecha</option>
+            </select>
           </div>
         </div>
-        <div class="col-md-3">
-          <div class="card h-100">
-            <div class="card-body text-center">
-              <i class="bi bi-clock-fill text-info fs-1 mb-2"></i>
-              <h4 class="mb-1">{{ tareasPendientes }}</h4>
-              <p class="text-muted mb-0">Tareas Pendientes</p>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="card h-100">
-            <div class="card-body text-center">
-              <i class="bi bi-trophy-fill text-primary fs-1 mb-2"></i>
-              <h4 class="mb-1">{{ mejorCalificacion }}</h4>
-              <p class="text-muted mb-0">Mejor Calificación</p>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <!-- Filtros -->
-      <div class="row mb-4">
-        <div class="col-md-4">
-          <select v-model="filtroCurso" class="form-select" @change="cargarCalificaciones">
-            <option value="">Todos los cursos</option>
-            <option v-for="curso in cursos" :key="curso.id" :value="curso.id">
-              {{ curso.titulo }}
-            </option>
-          </select>
-        </div>
-        <div class="col-md-4">
-          <select v-model="filtroPeriodo" class="form-select" @change="cargarCalificaciones">
-            <option value="">Todos los períodos</option>
-            <option value="2024-1">2024-1</option>
-            <option value="2024-2">2024-2</option>
-            <option value="2023-2">2023-2</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Lista de calificaciones -->
-      <div v-if="loading" class="text-center py-5">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Cargando...</span>
-        </div>
-      </div>
-
-      <div v-else-if="calificaciones.length === 0" class="text-center py-5 text-muted">
-        No hay calificaciones disponibles
-      </div>
-
-      <div v-else class="row g-4">
-        <div
-          v-for="calificacion in calificaciones"
-          :key="calificacion.id"
-          class="col-md-6 col-lg-4"
-        >
-          <div class="card h-100 shadow-sm">
-            <div class="card-body">
-              <div class="d-flex justify-content-between align-items-start mb-3">
-                <div>
-                  <h5 class="card-title mb-1">{{ calificacion.tarea.titulo }}</h5>
-                  <small class="text-muted">{{ calificacion.curso.titulo }}</small>
+        <!-- Calificaciones List -->
+        <div class="space-y-6">
+          <div
+            v-for="calificacion in calificacionesFiltradas"
+            :key="calificacion.id"
+            class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300"
+          >
+            <div class="p-6">
+              <!-- Course Header -->
+              <div class="flex items-start justify-between mb-4">
+                <div class="flex-1">
+                  <h3 class="text-xl font-bold text-gray-900 mb-2">{{ calificacion.curso }}</h3>
+                  <p class="text-gray-600 mb-2">{{ calificacion.descripcion }}</p>
+                  <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1 bg-indigo-100 text-indigo-800 text-sm rounded-full">
+                      {{ calificacion.categoria }}
+                    </span>
+                    <span :class="getEstadoBadge(calificacion.estado)">
+                      {{ calificacion.estado }}
+                    </span>
+                  </div>
                 </div>
-                <span
-                  class="badge fs-6"
-                  :class="getCalificacionClass(calificacion.puntaje)"
-                >
-                  {{ calificacion.puntaje }}/{{ calificacion.tarea.puntajeMaximo }}
-                </span>
+                <div class="ml-4">
+                  <div :class="getCalificacionColor(calificacion.calificacion_final)" 
+                       class="text-center p-4 rounded-xl min-w-[100px]">
+                    <p class="text-sm font-medium mb-1">Calificación</p>
+                    <p class="text-3xl font-bold">{{ calificacion.calificacion_final }}</p>
+                  </div>
+                </div>
               </div>
 
-              <div class="mb-3">
-                <div class="d-flex justify-content-between text-muted small mb-1">
-                  <span>Progreso</span>
-                  <span>{{ Math.round((calificacion.puntaje / calificacion.tarea.puntajeMaximo) * 100) }}%</span>
+              <!-- Progress Bar -->
+              <div class="mb-4">
+                <div class="flex justify-between text-sm text-gray-600 mb-2">
+                  <span>Progreso del curso</span>
+                  <span>{{ calificacion.progreso }}%</span>
                 </div>
-                <div class="progress" style="height: 6px;">
-                  <div
-                    class="progress-bar"
-                    :class="getCalificacionClass(calificacion.puntaje).replace('bg-', 'bg-')"
-                    :style="{ width: `${(calificacion.puntaje / calificacion.tarea.puntajeMaximo) * 100}%` }"
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div 
+                    :class="getProgressColor(calificacion.progreso)"
+                    class="h-2 rounded-full transition-all duration-300"
+                    :style="{ width: `${calificacion.progreso}%` }"
                   ></div>
                 </div>
               </div>
 
-              <div class="d-flex justify-content-between text-muted small mb-3">
-                <span><i class="bi bi-calendar me-1"></i>{{ formatDate(calificacion.fechaEntrega) }}</span>
-                <span><i class="bi bi-person me-1"></i>{{ calificacion.profesor.nombre }}</span>
-              </div>
-
-              <div v-if="calificacion.comentarios" class="mb-3">
-                <small class="text-muted">
-                  <strong>Comentarios:</strong><br>
-                  {{ calificacion.comentarios }}
-                </small>
-              </div>
-
-              <div class="d-flex justify-content-between align-items-center">
-                <small class="text-muted">
-                  {{ getCalificacionTexto(calificacion.puntaje) }}
-                </small>
-                <RouterLink
-                  :to="`/tareas/${calificacion.tarea.id}`"
-                  class="btn btn-outline-primary btn-sm"
+              <!-- Detalles de Tareas -->
+              <div class="border-t pt-4">
+                <button
+                  @click="toggleDetalles(calificacion.id)"
+                  class="flex items-center justify-between w-full text-left font-medium text-gray-700 hover:text-indigo-600 transition-colors"
                 >
-                  Ver Detalles
-                </RouterLink>
+                  <span class="flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    Ver detalles de tareas ({{ calificacion.tareas.length }})
+                  </span>
+                  <svg 
+                    :class="{ 'rotate-180': mostrarDetalles[calificacion.id] }"
+                    class="w-5 h-5 transition-transform" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                <!-- Tareas Detail -->
+                <div v-if="mostrarDetalles[calificacion.id]" class="mt-4 space-y-3">
+                  <div
+                    v-for="tarea in calificacion.tareas"
+                    :key="tarea.id"
+                    class="bg-gray-50 rounded-lg p-4 flex items-center justify-between"
+                  >
+                    <div class="flex-1">
+                      <h4 class="font-medium text-gray-900 mb-1">{{ tarea.titulo }}</h4>
+                      <div class="flex items-center gap-4 text-sm text-gray-600">
+                        <span class="flex items-center gap-1">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                          {{ new Date(tarea.fecha_entrega).toLocaleDateString() }}
+                        </span>
+                        <span :class="getEstadoTareaBadge(tarea.estado)">
+                          {{ tarea.estado }}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="ml-4">
+                      <div :class="getTareaCalificacionColor(tarea.calificacion)" 
+                           class="text-center px-4 py-2 rounded-lg min-w-[80px]">
+                        <p class="text-xl font-bold">
+                          {{ tarea.calificacion !== null ? tarea.calificacion : '-' }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Course Actions -->
+              <div class="flex gap-3 mt-4 pt-4 border-t">
+                <button
+                  @click="verCurso(calificacion.curso_id)"
+                  class="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  Ver Curso
+                </button>
+                <button
+                  v-if="calificacion.certificado_disponible"
+                  class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                  </svg>
+                  Obtener Certificado
+                </button>
               </div>
             </div>
+          </div>
+
+          <!-- Empty State -->
+          <div v-if="calificacionesFiltradas.length === 0" 
+               class="bg-white rounded-xl shadow-lg p-12 text-center">
+            <svg class="w-24 h-24 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">No se encontraron calificaciones</h3>
+            <p class="text-gray-600">Intenta ajustar los filtros de búsqueda</p>
           </div>
         </div>
       </div>
     </div>
-  </Layout>
+  </div>
 </template>
 
-<script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
-import { RouterLink } from 'vue-router'
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { api } from '../services/api'
-// @ts-ignore
-import Layout from '../components/Layout.vue'
+import { authStore } from '../stores/auth'
 
-// Tipos
-interface Curso {
-  id: number
-  titulo: string
-}
+const router = useRouter()
 
-interface Calificacion {
-  id: number
-  puntaje: number
-  fechaEntrega: string
-  comentarios: string
-  tarea: {
-    id: number
-    titulo: string
-    puntajeMaximo: number
-  }
-  curso: {
-    id: number
-    titulo: string
-  }
-  profesor: {
-    nombre: string
-  }
-}
-
-// Estado reactivo
+// State
 const loading = ref(true)
-const calificaciones = ref<Calificacion[]>([])
-const cursos = ref<Curso[]>([])
-const filtroCurso = ref('')
-const filtroPeriodo = ref('')
+const error = ref(null)
+const calificaciones = ref([])
+const mostrarDetalles = ref({})
 
-// Función para cargar cursos
-const cargarCursos = async () => {
-  try {
-    // Datos de ejemplo para cursos
-    cursos.value = [
-      { id: 1, titulo: 'Introducción a la Programación' },
-      { id: 2, titulo: 'Base de Datos' },
-      { id: 3, titulo: 'Desarrollo Web' },
-      { id: 4, titulo: 'Algoritmos y Estructuras de Datos' },
-      { id: 5, titulo: 'Machine Learning' },
-      { id: 6, titulo: 'Desarrollo Móvil' }
-    ]
-  } catch (error) {
-    console.error('Error cargando cursos:', error)
+// Filters
+const searchQuery = ref('')
+const filterEstado = ref('todos')
+const sortBy = ref('nombre')
+
+// Computed Stats
+const stats = computed(() => {
+  const total = calificaciones.value.length
+  const aprobados = calificaciones.value.filter(c => c.estado === 'Aprobado').length
+  const activos = calificaciones.value.filter(c => c.estado === 'En progreso').length
+  const totalTareas = calificaciones.value.reduce((sum, c) => sum + c.tareas.length, 0)
+  
+  const promedioTotal = calificaciones.value.reduce((sum, c) => sum + c.calificacion_final, 0)
+  const promedio = total > 0 ? (promedioTotal / total).toFixed(1) : '0.0'
+  
+  return {
+    promedioGeneral: promedio,
+    cursosAprobados: aprobados,
+    cursosActivos: activos,
+    totalTareas
   }
-}
-
-const promedioGeneral = computed(() => {
-  if (calificaciones.value.length === 0) return '0.0'
-  const suma = calificaciones.value.reduce((acc, cal) => acc + cal.puntaje, 0)
-  const total = calificaciones.value.reduce((acc, cal) => acc + cal.tarea.puntajeMaximo, 0)
-  return (suma / total * 100).toFixed(1)
 })
 
-const tareasCompletadas = computed(() => {
-  return calificaciones.value.length
-})
-
-const tareasPendientes = computed(() => {
-  return 2 // Simulado
-})
-
-const mejorCalificacion = computed(() => {
-  if (calificaciones.value.length === 0) return '0'
-  const max = Math.max(...calificaciones.value.map(cal => cal.puntaje))
-  return max.toString()
-})
-
-const getCalificacionClass = (puntaje: number) => {
-  if (puntaje >= 90) return 'bg-success'
-  if (puntaje >= 80) return 'bg-info'
-  if (puntaje >= 70) return 'bg-warning'
-  return 'bg-danger'
-}
-
-const getCalificacionTexto = (puntaje: number) => {
-  if (puntaje >= 90) return 'Excelente'
-  if (puntaje >= 80) return 'Bueno'
-  if (puntaje >= 70) return 'Satisfactorio'
-  return 'Necesita mejorar'
-}
-
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('es-ES', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
+// Computed Filtered
+const calificacionesFiltradas = computed(() => {
+  let resultado = [...calificaciones.value]
+  
+  // Filtrar por búsqueda
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase()
+    resultado = resultado.filter(c => 
+      c.curso.toLowerCase().includes(query) ||
+      c.descripcion.toLowerCase().includes(query) ||
+      c.categoria.toLowerCase().includes(query)
+    )
+  }
+  
+  // Filtrar por estado
+  if (filterEstado.value !== 'todos') {
+    resultado = resultado.filter(c => {
+      if (filterEstado.value === 'aprobado') return c.estado === 'Aprobado'
+      if (filterEstado.value === 'reprobado') return c.estado === 'Reprobado'
+      if (filterEstado.value === 'en_progreso') return c.estado === 'En progreso'
+      return true
+    })
+  }
+  
+  // Ordenar
+  resultado.sort((a, b) => {
+    if (sortBy.value === 'nombre') return a.curso.localeCompare(b.curso)
+    if (sortBy.value === 'calificacion') return b.calificacion_final - a.calificacion_final
+    if (sortBy.value === 'fecha') return new Date(b.fecha_actualizacion) - new Date(a.fecha_actualizacion)
+    return 0
   })
+  
+  return resultado
+})
+
+// Methods
+const toggleDetalles = (id) => {
+  mostrarDetalles.value[id] = !mostrarDetalles.value[id]
 }
 
-const cargarCalificaciones = async () => {
+const verCurso = (cursoId) => {
+  router.push(`/cursos/${cursoId}`)
+}
+
+const getCalificacionColor = (calificacion) => {
+  if (calificacion >= 90) return 'bg-green-100 text-green-800'
+  if (calificacion >= 80) return 'bg-blue-100 text-blue-800'
+  if (calificacion >= 70) return 'bg-yellow-100 text-yellow-800'
+  return 'bg-red-100 text-red-800'
+}
+
+const getTareaCalificacionColor = (calificacion) => {
+  if (calificacion === null) return 'bg-gray-100 text-gray-600'
+  if (calificacion >= 90) return 'bg-green-100 text-green-800'
+  if (calificacion >= 80) return 'bg-blue-100 text-blue-800'
+  if (calificacion >= 70) return 'bg-yellow-100 text-yellow-800'
+  return 'bg-red-100 text-red-800'
+}
+
+const getProgressColor = (progreso) => {
+  if (progreso >= 90) return 'bg-green-500'
+  if (progreso >= 70) return 'bg-blue-500'
+  if (progreso >= 50) return 'bg-yellow-500'
+  return 'bg-red-500'
+}
+
+const getEstadoBadge = (estado) => {
+  if (estado === 'Aprobado') return 'px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full'
+  if (estado === 'En progreso') return 'px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full'
+  if (estado === 'Reprobado') return 'px-3 py-1 bg-red-100 text-red-800 text-sm rounded-full'
+  return 'px-3 py-1 bg-gray-100 text-gray-800 text-sm rounded-full'
+}
+
+const getEstadoTareaBadge = (estado) => {
+  if (estado === 'Entregada') return 'px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full'
+  if (estado === 'Pendiente') return 'px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full'
+  if (estado === 'Atrasada') return 'px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full'
+  return 'px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded-full'
+}
+
+const fetchCalificaciones = async () => {
   loading.value = true
+  error.value = null
   
   try {
-    // Intentar cargar desde la API real
-    const response = await api.get('/calificaciones/mis-calificaciones')
-    let calificacionesData = response.data || []
-    
-    // Si no hay calificaciones desde la API, usar datos demo para estudiantes
-    if (calificacionesData.length === 0) {
-      calificacionesData = [
-          {
-            id: 1,
-            puntaje: 92,
-            fechaEntrega: '2024-01-18',
-            comentarios: 'Excelente trabajo. Muy bien estructurado y completo.',
-            tarea: {
-              id: 1,
-              titulo: 'Ejercicio de Variables y Tipos de Datos',
-              puntajeMaximo: 100
-            },
-            curso: {
-              id: 1,
-              titulo: 'Introducción a la Programación'
-            },
-            profesor: {
-              nombre: 'Juan Pérez'
-            }
-          },
-          {
-            id: 3,
-            puntaje: 85,
-            fechaEntrega: '2024-01-17',
-            comentarios: 'Buen trabajo. Cumple con los requisitos básicos.',
-            tarea: {
-              id: 1,
-              titulo: 'Ejercicio de Variables y Tipos de Datos',
-              puntajeMaximo: 100
-            },
-            curso: {
-              id: 1,
-              titulo: 'Introducción a la Programación'
-            },
-            profesor: {
-              nombre: 'Juan Pérez'
-            }
-          },
-          {
-            id: 4,
-            puntaje: 135,
-            fechaEntrega: '2024-03-08',
-            comentarios: 'Diseño de base de datos completado correctamente.',
-            tarea: {
-              id: 3,
-              titulo: 'Diseño de Base de Datos',
-              puntajeMaximo: 150
-            },
-            curso: {
-              id: 2,
-              titulo: 'Base de Datos'
-            },
-            profesor: {
-              nombre: 'María García'
-            }
-          }
-      ]
-    }
-    
-    // Aplicar filtros
-    let calificacionesFiltradas = calificacionesData
-    
-    if (filtroCurso.value) {
-      calificacionesFiltradas = calificacionesFiltradas.filter(cal => 
-        cal.curso && cal.curso.id === parseInt(filtroCurso.value)
-      )
-    }
-    
-    calificaciones.value = calificacionesFiltradas
-  } catch (apiError) {
-    // Si falla la API, usar datos demo directamente
-    console.warn('Usando datos demo para calificaciones:', apiError)    
-    const calificacionesDemo = [
-      {
-        id: 1,
-        puntaje: 92,
-        fechaEntrega: '2024-01-18',
-        comentarios: 'Excelente trabajo. Muy bien estructurado y completo.',
-        tarea: {
-          id: 1,
-          titulo: 'Ejercicio de Variables y Tipos de Datos',
-          puntajeMaximo: 100
-        },
-        curso: {
-          id: 1,
-          titulo: 'Introducción a la Programación'
-        },
-        profesor: {
-          nombre: 'Juan Pérez'
-        }
-      },
-      {
-        id: 4,
-        puntaje: 135,
-        fechaEntrega: '2024-03-08',
-        comentarios: 'Diseño de base de datos completado correctamente.',
-        tarea: {
-          id: 3,
-          titulo: 'Diseño de Base de Datos',
-          puntajeMaximo: 150
-        },
-        curso: {
-          id: 2,
-          titulo: 'Base de Datos'
-        },
-        profesor: {
-          nombre: 'María García'
-        }
-      }
-    ]
-    
-    let calificacionesFiltradas = calificacionesDemo
-    
-    if (filtroCurso.value) {
-      calificacionesFiltradas = calificacionesFiltradas.filter(cal => 
-        cal.curso.id === parseInt(filtroCurso.value)
-      )
-    }
-    
-    calificaciones.value = calificacionesFiltradas
+    const response = await api.get(`/calificaciones/estudiante/${authStore.user.id}`)
+    calificaciones.value = response.data
+  } catch (err) {
+    console.error('Error al cargar calificaciones:', err)
+    error.value = 'Error al cargar las calificaciones. Por favor, intenta de nuevo.'
   } finally {
     loading.value = false
   }
 }
 
-// Inicializar datos al montar el componente
 onMounted(() => {
-  Promise.all([
-    cargarCalificaciones(),
-    cargarCursos()
-  ])
+  fetchCalificaciones()
 })
 </script>
-
-<style scoped>
-.progress {
-  background-color: #e9ecef;
-}
-</style>

@@ -252,6 +252,78 @@ let entregas = [
   }
 ];
 
+let calificaciones = [
+  {
+    id: 1,
+    curso_id: 1,
+    curso: 'Desarrollo Web Full Stack',
+    descripcion: 'Aprende a crear aplicaciones web modernas con Vue.js y Node.js',
+    categoria: 'Desarrollo Web',
+    calificacion_final: 92,
+    progreso: 85,
+    estado: 'En progreso',
+    certificado_disponible: false,
+    estudiante_id: 3,
+    tareas: [
+      { id: 1, titulo: 'HTML y CSS Básico', calificacion: 95, estado: 'Entregada', fecha_entrega: '2024-10-15' },
+      { id: 2, titulo: 'JavaScript Fundamentos', calificacion: 88, estado: 'Entregada', fecha_entrega: '2024-10-22' },
+      { id: 3, titulo: 'Vue.js Componentes', calificacion: 93, estado: 'Entregada', fecha_entrega: '2024-10-29' },
+      { id: 4, titulo: 'Proyecto Final Frontend', calificacion: null, estado: 'Pendiente', fecha_entrega: '2024-11-15' }
+    ]
+  },
+  {
+    id: 2,
+    curso_id: 2,
+    curso: 'Python para Data Science',
+    descripcion: 'Análisis de datos con Python, Pandas y Matplotlib',
+    categoria: 'Ciencia de Datos',
+    calificacion_final: 88,
+    progreso: 100,
+    estado: 'Aprobado',
+    certificado_disponible: true,
+    estudiante_id: 3,
+    tareas: [
+      { id: 5, titulo: 'Pandas Básico', calificacion: 90, estado: 'Entregada', fecha_entrega: '2024-09-10' },
+      { id: 6, titulo: 'Visualización de Datos', calificacion: 85, estado: 'Entregada', fecha_entrega: '2024-09-20' },
+      { id: 7, titulo: 'Machine Learning Intro', calificacion: 89, estado: 'Entregada', fecha_entrega: '2024-09-30' }
+    ]
+  },
+  {
+    id: 3,
+    curso_id: 3,
+    curso: 'Diseño UI/UX Avanzado',
+    descripcion: 'Principios de diseño de interfaces y experiencia de usuario',
+    categoria: 'Diseño',
+    calificacion_final: 95,
+    progreso: 100,
+    estado: 'Aprobado',
+    certificado_disponible: true,
+    estudiante_id: 3,
+    tareas: [
+      { id: 8, titulo: 'Fundamentos de UI', calificacion: 92, estado: 'Entregada', fecha_entrega: '2024-08-15' },
+      { id: 9, titulo: 'Prototipado en Figma', calificacion: 98, estado: 'Entregada', fecha_entrega: '2024-08-25' },
+      { id: 10, titulo: 'Proyecto Final UI/UX', calificacion: 95, estado: 'Entregada', fecha_entrega: '2024-09-05' }
+    ]
+  },
+  {
+    id: 4,
+    curso_id: 4,
+    curso: 'Bases de Datos SQL',
+    descripcion: 'Diseño y optimización de bases de datos relacionales',
+    categoria: 'Backend',
+    calificacion_final: 78,
+    progreso: 70,
+    estado: 'En progreso',
+    certificado_disponible: false,
+    estudiante_id: 3,
+    tareas: [
+      { id: 11, titulo: 'Consultas SQL Básicas', calificacion: 80, estado: 'Entregada', fecha_entrega: '2024-10-05' },
+      { id: 12, titulo: 'Normalización de BD', calificacion: 75, estado: 'Entregada', fecha_entrega: '2024-10-18' },
+      { id: 13, titulo: 'Optimización de Queries', calificacion: null, estado: 'Pendiente', fecha_entrega: '2024-11-10' }
+    ]
+  }
+];
+
 let materiales = [
   {
     id: 1,
@@ -298,8 +370,9 @@ let contadores = {
   entregas: 6,
   materiales: 2,
   mensajes: 3,
-  tokensRevocados: 1
+  calificaciones: 5
 };
+  tokensRevocados: 1
 
 // ==================== MIDDLEWARE DE AUTENTICACIÓN ====================
 const authenticateToken = (req, res, next) => {
@@ -1429,6 +1502,26 @@ app.get('/api/v1/dashboard/stats', authenticateToken, (req, res) => {
   res.json(stats);
 });
 
+// ==================== RUTAS DE CALIFICACIONES ====================
+
+// Obtener calificaciones de un estudiante
+app.get('/api/v1/calificaciones/estudiante/:id', authenticateToken, (req, res) => {
+  const estudianteId = parseInt(req.params.id);
+  
+  // Verificar permisos: solo el propio estudiante, docentes y admin pueden ver
+  if (req.user.rol === 'ESTUDIANTE' && req.user.id !== estudianteId) {
+    return res.status(403).json({ message: 'No tienes permisos para ver estas calificaciones' });
+  }
+  
+  const calificacionesEstudiante = calificaciones.filter(c => c.estudiante_id === estudianteId);
+  res.json(calificacionesEstudiante);
+});
+
+// Obtener todas las calificaciones (solo para admin y docentes)
+app.get('/api/v1/calificaciones', authenticateToken, requireRole('ADMIN', 'DOCENTE'), (req, res) => {
+  res.json(calificaciones);
+});
+
 // ==================== RUTA DE HEALTH CHECK ====================
 app.get('/api/v1/health', (req, res) => {
   res.json({ 
@@ -1470,10 +1563,10 @@ app.listen(PORT, () => {
 ║  └──────────────────────────────────────────────┘ 
 ╠════════════════════════════════════════════════════
 ║  📊 ESTADÍSTICAS:                                 
-║  • Usuarios:     ${usuarios.length} registrados                   ║
-║  • Cursos:       ${cursos.length} disponibles                     ║
-║  • Tareas:       ${tareas.length} activas                         ║
-║  • Matrículas:   ${matriculas.length} activas                     ║
+║  • Usuarios:     ${usuarios.length} registrados
+║  • Cursos:       ${cursos.length} disponibles
+║  • Tareas:       ${tareas.length} activas
+║  • Matrículas:   ${matriculas.length} activas
 ╚════════════════════════════════════════════════════
   `);
 });
