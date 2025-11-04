@@ -4,10 +4,22 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
+// ========== IMPORTAR CONEXIÓN A MARIADB ==========
+const pool = require('./config/database');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'tu-secreto-super-seguro-cambialo-en-produccion';
 
+// Variable para alternar entre memoria y MariaDB
+const USE_DATABASE = process.env.USE_DATABASE === 'true';
+
+console.log(`
+╔════════════════════════════════════════════════════
+║  💾 MODO DE ALMACENAMIENTO                        
+║  ${USE_DATABASE ? '✅ MariaDB (Base de datos)' : '⚠️  Memoria (Datos temporales)'}
+╚════════════════════════════════════════════════════
+`);
 // Middleware
 app.use(cors({
   origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
